@@ -12,6 +12,8 @@ import {
 import { useState, useEffect } from "react";
 import Router from "next/router";
 import { Page } from "../src/page";
+import { Headline, Subtitle } from "../src/typography";
+import { Button, Link } from "../src/controls";
 
 const AnimatedFlex = animated(Flex);
 
@@ -36,51 +38,6 @@ const Purple = styled(Flex)`
   font-family: Arial Black, Arial, Helvetica, sans-serif;
   font-weight: 800;
   text-shadow: 2px 2px ${pink.css()};
-`;
-
-const Headline = styled(Flex)`
-  font-family: Arial Black;
-  font-size: 24px;
-  line-height: 36px;
-  color: ${text_dark.css()};
-  text-align: center;
-`;
-
-const Subtitle = styled(Flex)`
-  font-family: Arial;
-  font-size: 18px;
-  line-height: 24px;
-  text-align: center;
-  color: ${text_dark.css()};
-`;
-
-const Button = styled.button`
-  color: ${pink.css()};
-  font-size: 16px;
-  font-weight: bold;
-  padding: 8px 16px;
-  min-width: 64px;
-  border: 2px solid ${pink.css()};
-  border-radius: 2px;
-  background: none;
-  outline: none;
-  cursor: pointer;
-
-  &:hover {
-    background: ${pink.alpha(0.04).css()};
-  }
-`;
-
-const Link = styled.a`
-  font-family: Arial;
-  text-decoration: none;
-  color: ${pink.css()};
-  font-size: 14px;
-  cursor: pointer;
-
-  &:hover {
-    color: ${pink.darken(0.5).css()};
-  }
 `;
 
 const HomePage: React.SFC = () => {

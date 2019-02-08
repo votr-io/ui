@@ -1,71 +1,49 @@
-import React from "react";
-import { Page } from "../src/page";
-import styled from "styled-components";
-import { useTrail, config, animated } from "react-spring";
-import { text_dark, text_light } from "../src/styles";
 import { Flex } from "@rebass/grid";
-
-const Form = styled.form`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-`;
-
-const formElements = [
-  { label: "name" },
-  { label: "age" },
-  { label: "virthday" }
-];
-
-const Input = styled.input`
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  border: 1px solid ${text_light.css()};
-  border-radius: 2px;
-  padding: 4px 8px;
-  background: none;
-`;
-
-const Label = styled.label`
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  color: ${text_dark.css()};
-  margin-bottom: 4px;
-`;
-
-const AnimatedFlex = animated(Flex);
+import React from "react";
+import { config, useTrail } from "react-spring";
+import {
+  Form,
+  FormHeader,
+  FormRow,
+  Input,
+  Label,
+  Button
+} from "../src/controls";
+import { Page } from "../src/page";
+import { Headline } from "../src/typography";
 
 const CreateElection: React.SFC = () => {
-  const trail = useTrail(formElements.length, {
+  const trail = useTrail(3, {
     config: config.default,
     x: 1,
     from: { x: 0 }
   });
 
+  const animate = (t: typeof trail[0]) => ({
+    opacity: t.x,
+    transform: t.x.interpolate(x => `translateX(${x * 10}px)`)
+  });
+
   return (
     <Page>
-      <Form>
-        {trail.map((t, i) => {
-          const el = formElements[i];
-
-          return (
-            <AnimatedFlex
-              flexDirection="column"
-              alignItems="flex-start"
-              flex="0 0 auto"
-              key={el.label}
-              style={{
-                opacity: t.x,
-                transform: t.x.interpolate(x => `translateX(${x * 10}px)`),
-                marginBottom: "16px"
-              }}
-            >
-              <Label htmlFor={el.label}>{el.label}</Label>
-              <Input name={el.label} type="text" />
-            </AnimatedFlex>
-          );
-        })}
-      </Form>
+      <Flex flex="1" flexDirection="column" alignItems="center">
+        <Form>
+          <FormHeader style={animate(trail[0])}>
+            <Headline>Create an election</Headline>
+          </FormHeader>
+          <FormRow style={animate(trail[1])}>
+            <Label htmlFor="name">Election Name</Label>
+            <Input name="name" autoFocus />
+          </FormRow>
+          <FormRow style={animate(trail[2])}>
+            <Label htmlFor="age">Election Name</Label>
+            <Input name="age" />
+          </FormRow>
+          <Flex flex="1" alignItems="flex-end" justifyContent="flex-end">
+            <Button>Save</Button>
+          </Flex>
+        </Form>
+      </Flex>
     </Page>
   );
 };

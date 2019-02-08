@@ -8,6 +8,9 @@ export const purple_light = chroma.hex("#A636FF");
 export const text_dark = chroma("black").alpha(0.87);
 export const text_light = chroma("black").alpha(0.6);
 
+export const disabled = chroma("black").alpha(0.4);
+export const divider = chroma("black").alpha(0.25);
+
 const makeShadow = (z: number) => {
   const style = css`
     box-shadow: 0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),

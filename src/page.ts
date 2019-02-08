@@ -11,4 +11,5 @@ export const Page = styled(Flex)`
   flex-direction: row;
   background: #fcfcfc;
   padding: 16px;
+  overflow: auto;
 `;
