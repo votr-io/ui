@@ -12,8 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "@rebass/grid": "^6.0.0-7",
+    "@types/chroma-js": "^1.4.1",
+    "@types/next": "^7.0.9",
     "@types/rebass__grid": "^6.0.2",
     "@zeit/next-typescript": "^1.1.1",
+    "chroma-js": "^2.0.2",
     "next": "^7.0.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
