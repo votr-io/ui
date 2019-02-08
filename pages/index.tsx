@@ -1,5 +1,6 @@
 import { Flex } from "@rebass/grid";
 import styled from "styled-components";
+import { useSpring, animated, useTrail, config } from "react-spring";
 
 import {
   elevations,
@@ -8,20 +9,17 @@ import {
   purple_light,
   text_dark
 } from "../src/styles";
+import { useState, useEffect } from "react";
+import Router from "next/router";
+import { Page } from "../src/page";
 
-const Page = styled(Flex)`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  flex: 1;
-  flex-direction: row;
-`;
+const AnimatedFlex = animated(Flex);
 
-const Panel = styled(Flex)`
+const Panel = styled(animated.div)`
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  padding: 16px;
+  background: #fcfcfc;
 `;
 
 const Purple = styled(Flex)`
@@ -85,32 +83,65 @@ const Link = styled.a`
   }
 `;
 
-const HomePage: React.SFC = () => (
-  <Page>
-    <Panel flexDirection="column">
-      <Flex flex="1" />
-      <Flex
-        flex="1"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
+const HomePage: React.SFC = () => {
+  const [toggle, set] = useState(true);
+
+  useEffect(() => {
+    Router.prefetch("/create");
+  }, []);
+
+  const onRest = () => {
+    if (!toggle) {
+      Router.push("/create");
+    }
+  };
+
+  const trail = useTrail(2, {
+    config: config.default,
+    x: toggle ? 0 : 1,
+    from: { x: 0 },
+    onRest
+  });
+
+  return (
+    <Page>
+      <Panel
+        style={{
+          transform: trail[0].x.interpolate(x => `translateX(${x * 100}%)`)
+        }}
       >
-        <Headline>simple ranked-choice voting</Headline>
-        <Subtitle>unleash the power of democracy</Subtitle>
-        <div style={{ height: "48px" }} />
-        <Button>HOLD AN ELECTION ></Button>
-      </Flex>
-      <Flex flex="1" flexDirection="column" justifyContent="flex-end">
-        <Flex flexDirection="row" justifyContent="space-around">
-          <Link>log in</Link>
-          <Link>about us</Link>
-        </Flex>
-      </Flex>
-    </Panel>
-    <Panel>
-      <Purple>votr</Purple>
-    </Panel>
-  </Page>
-);
+        <AnimatedFlex
+          flex="1"
+          flexDirection="column"
+          style={{
+            opacity: trail[1].x.interpolate(x => 1 - x)
+          }}
+        >
+          <Flex flex="1" />
+          <Flex
+            flex="1"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Headline>simple ranked-choice voting</Headline>
+            <Subtitle>unleash the power of democracy</Subtitle>
+            <div style={{ height: "48px" }} />
+            <Button onClick={() => set(s => !s)}>HOLD AN ELECTION ></Button>
+          </Flex>
+          <Flex flex="1" flexDirection="column" justifyContent="flex-end">
+            <Flex flexDirection="row" justifyContent="space-around">
+              <Link>log in</Link>
+              <Link>about us</Link>
+            </Flex>
+          </Flex>
+        </AnimatedFlex>
+      </Panel>
+      <Panel>
+        <Purple>votr</Purple>
+      </Panel>
+    </Page>
+  );
+};
 
 export default HomePage;
