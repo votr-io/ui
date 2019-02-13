@@ -3,10 +3,15 @@ import { Flex } from "@rebass/grid/emotion";
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { animated, config, useTrail } from "react-spring";
-import { Button, Link } from "../src/controls";
-import { Page } from "../src/page";
-import { elevations, gradient_dark, gradient_light, pink } from "../src/styles";
-import { Headline, Subtitle } from "../src/typography";
+import { Button, Link } from "../components/controls";
+import { Page } from "../components/page";
+import {
+  elevations,
+  gradient_dark,
+  gradient_light,
+  pink
+} from "../components/styles";
+import { Headline, Subtitle } from "../components/typography";
 
 const AnimatedFlex = animated(Flex);
 

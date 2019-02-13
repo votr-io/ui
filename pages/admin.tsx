@@ -8,9 +8,9 @@ import {
   Input,
   Label,
   Button
-} from "../src/controls";
-import { Page } from "../src/page";
-import { Headline } from "../src/typography";
+} from "../components/controls";
+import { Page } from "../components/page";
+import { Headline } from "../components/typography";
 
 const CreateElection: React.SFC = () => {
   const trail = useTrail(3, {
