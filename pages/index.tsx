@@ -1,19 +1,12 @@
-import { Flex } from "@rebass/grid";
-import styled from "styled-components";
-import { useSpring, animated, useTrail, config } from "react-spring";
-
-import {
-  elevations,
-  pink,
-  purple_dark,
-  purple_light,
-  text_dark
-} from "../src/styles";
-import { useState, useEffect } from "react";
+import styled from "@emotion/styled";
+import { Flex } from "@rebass/grid/emotion";
 import Router from "next/router";
-import { Page } from "../src/page";
-import { Headline, Subtitle } from "../src/typography";
+import { useEffect, useState } from "react";
+import { animated, config, useTrail } from "react-spring";
 import { Button, Link } from "../src/controls";
+import { Page } from "../src/page";
+import { elevations, gradient_dark, gradient_light, pink } from "../src/styles";
+import { Headline, Subtitle } from "../src/typography";
 
 const AnimatedFlex = animated(Flex);
 
@@ -26,9 +19,9 @@ const Panel = styled(animated.div)`
 
 const Purple = styled(Flex)`
   flex: 1;
-  background-image: radial-gradient(
-    ${purple_light.css()},
-    ${purple_dark.css()}
+  background-image: linear-gradient(
+    ${gradient_dark.css()},
+    ${gradient_light.css()}
   );
   justify-content: center;
   align-items: center;

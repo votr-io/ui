@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { pink, text_dark, divider, text_light } from "./styles";
+import styled from "@emotion/styled";
+import { pink, text_dark, divider, text_light, opacity } from "./styles";
 import { animated } from "react-spring";
 import { Flex } from "@rebass/grid";
 
@@ -16,19 +16,27 @@ export const Button = styled.button`
   cursor: pointer;
 
   &:hover {
-    background: ${pink.alpha(0.04).css()};
+    background: ${pink.alpha(opacity(pink, "hover")).css()};
+  }
+
+  &:focus {
+    background: ${pink.alpha(opacity(pink, "focus")).css()};
+  }
+
+  &:active {
+    background: ${pink.alpha(opacity(pink, "pressed")).css()};
   }
 `;
 
 export const Link = styled.a`
   font-family: Arial;
   text-decoration: none;
-  color: ${pink.css()};
+  color: ${text_light.css()};
   font-size: 14px;
   cursor: pointer;
 
   &:hover {
-    color: ${pink.darken(0.5).css()};
+    color: ${text_light.darken(0.5).css()};
   }
 `;
 

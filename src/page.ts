@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { Flex } from "@rebass/grid";
+import styled from "@emotion/styled";
+import { Flex } from "@rebass/grid/emotion";
 
 export const Page = styled(Flex)`
   position: absolute;

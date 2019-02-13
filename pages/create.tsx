@@ -1,4 +1,4 @@
-import { Flex } from "@rebass/grid";
+import { Flex } from "@rebass/grid/emotion";
 import React from "react";
 import { config, useTrail } from "react-spring";
 import {
