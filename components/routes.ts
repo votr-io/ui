@@ -1,12 +1,12 @@
 export enum ROUTES {
-  about = "about",
-  admin = "admin",
-  index = "index",
-  login = "login",
-  register = "register",
-  results = "results",
-  vote = "vote",
-  list = "list"
+  about = "/about",
+  admin = "/admin",
+  index = "/index",
+  login = "/login",
+  register = "/register",
+  results = "/results",
+  vote = "/vote",
+  list = "/list"
 }
 
 type DIRECTION = "h" | "v";
@@ -38,3 +38,9 @@ export const validLinks = links.reduce(
   },
   {} as LinkMap
 );
+
+export function matchRoute(pathname: string | undefined) {
+  return Object.values(ROUTES).find(route =>
+    (pathname || "").startsWith(route)
+  );
+}

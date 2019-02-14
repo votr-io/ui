@@ -1,16 +1,17 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
-import Router from "next/router";
-import { useEffect, useState } from "react";
+import NextLink from "next/link";
 import { animated, config, useTrail } from "react-spring";
 import { Button, Link } from "../components/controls";
 import { Page } from "../components/page";
+import { ROUTES } from "../components/routes";
 import {
   elevations,
   gradient_dark,
   gradient_light,
   pink
 } from "../components/styles";
+import { PageProps } from "../components/types";
 import { Headline, Subtitle } from "../components/typography";
 
 const AnimatedFlex = animated(Flex);
@@ -38,24 +39,15 @@ const Purple = styled(Flex)`
   text-shadow: 2px 2px ${pink.css()};
 `;
 
-const HomePage: React.SFC = () => {
-  const [toggle, set] = useState(true);
-
-  useEffect(() => {
-    Router.prefetch("/create");
-  }, []);
-
-  const onRest = () => {
-    if (!toggle) {
-      Router.push("/create");
-    }
-  };
+const HomePage: React.SFC<PageProps> = props => {
+  const isEntering = props.transitionState === "enter";
+  const isExiting = props.transitionState === "exit";
 
   const trail = useTrail(2, {
     config: config.default,
-    x: toggle ? 0 : 1,
-    from: { x: 0 },
-    onRest
+    x: isExiting ? 1 : 0,
+    from: { x: isEntering ? 1 : 0 },
+    onRest: props.onTransitionComplete
   });
 
   return (
@@ -82,7 +74,9 @@ const HomePage: React.SFC = () => {
             <Headline>simple ranked-choice voting</Headline>
             <Subtitle>unleash the power of democracy</Subtitle>
             <div style={{ height: "48px" }} />
-            <Button onClick={() => set(s => !s)}>HOLD AN ELECTION ></Button>
+            <NextLink href={ROUTES.admin}>
+              <Button>HOLD AN ELECTION ></Button>
+            </NextLink>
           </Flex>
           <Flex flex="1" flexDirection="column" justifyContent="flex-end">
             <Flex flexDirection="row" justifyContent="space-around">

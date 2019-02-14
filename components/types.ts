@@ -1,4 +1,7 @@
+export type TransitionState = "enter" | "exit" | "none";
+
 export interface PageProps {
-  shouldExit: boolean;
-  onExitComplete: VoidFunction;
+  path: string;
+  transitionState: TransitionState;
+  onTransitionComplete: VoidFunction;
 }

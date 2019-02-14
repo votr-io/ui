@@ -58,6 +58,7 @@ export const FormRow = styled(AnimatedFlex)`
   flex-direction: column;
   padding: 8px 16px;
   margin-bottom: 16px;
+  flex: 1;
 `;
 
 export const Input = styled.input`

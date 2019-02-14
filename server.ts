@@ -1,8 +1,7 @@
 import { createServer } from "http";
-import { parse } from "url";
 import * as next from "next";
-
-import { ROUTES } from "./components/routes";
+import { parse } from "url";
+import { matchRoute } from "./components/routes";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -15,19 +14,10 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url || "", true);
     const { pathname } = parsedUrl;
 
-    const dynamicRoutes = [
-      ROUTES.admin,
-      ROUTES.register,
-      ROUTES.results,
-      ROUTES.vote
-    ];
-
-    const matchedRoute = dynamicRoutes.find(route =>
-      (pathname || "").startsWith(`/${route}`)
-    );
+    const matchedRoute = matchRoute(pathname);
 
     if (matchedRoute) {
-      return app.render(req, res, `/${matchedRoute}`);
+      return app.render(req, res, matchedRoute);
     }
 
     return handle(req, res, parsedUrl);
