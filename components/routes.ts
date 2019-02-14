@@ -9,7 +9,7 @@ export enum ROUTES {
   list = "/list"
 }
 
-type DIRECTION = "h" | "v";
+export type DIRECTION = "h" | "v";
 
 interface Link {
   from: ROUTES;

@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import NextLink from "next/link";
-import { animated, config, useTrail } from "react-spring";
+import { animated } from "react-spring";
 import { Button, Link } from "../components/controls";
 import { Page } from "../components/page";
+import { usePageTransition } from "../components/pageTransition";
 import { ROUTES } from "../components/routes";
 import {
   elevations,
@@ -40,28 +41,26 @@ const Purple = styled(Flex)`
 `;
 
 const HomePage: React.SFC<PageProps> = props => {
-  const isEntering = props.transitionState === "enter";
-  const isExiting = props.transitionState === "exit";
-
-  const trail = useTrail(2, {
-    config: config.default,
-    x: isExiting ? 1 : 0,
-    from: { x: isEntering ? 1 : 0 },
-    onRest: props.onTransitionComplete
-  });
+  const trail = usePageTransition(
+    3,
+    props.transitionState,
+    props.onTransitionComplete
+  );
 
   return (
     <Page>
       <Panel
         style={{
-          transform: trail[0].x.interpolate(x => `translateX(${x * 100}%)`)
+          transform: trail[0].x.interpolate(
+            x => `translateX(${(1 - x) * 100}%)`
+          )
         }}
       >
         <AnimatedFlex
           flex="1"
           flexDirection="column"
           style={{
-            opacity: trail[1].x.interpolate(x => 1 - x)
+            opacity: trail[1].x.interpolate(x => x)
           }}
         >
           <Flex flex="1" />
@@ -80,8 +79,12 @@ const HomePage: React.SFC<PageProps> = props => {
           </Flex>
           <Flex flex="1" flexDirection="column" justifyContent="flex-end">
             <Flex flexDirection="row" justifyContent="space-around">
-              <Link>log in</Link>
-              <Link>about us</Link>
+              <NextLink href={ROUTES.login}>
+                <Link>log in</Link>
+              </NextLink>
+              <NextLink href={ROUTES.about}>
+                <Link>about us</Link>
+              </NextLink>
             </Flex>
           </Flex>
         </AnimatedFlex>

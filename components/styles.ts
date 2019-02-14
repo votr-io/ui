@@ -2,8 +2,6 @@ import chroma, { ChromaStatic } from "chroma-js";
 import { css } from "@emotion/core";
 
 export const pink = chroma.hex("#FF5794");
-// export const purple_dark = chroma.hex("#481770");
-// export const purple_light = chroma.hex("#A636FF");
 
 export const purple = chroma.hex("#8F30CF");
 export const gradient_dark = chroma.hex("#4D1A70");
@@ -14,6 +12,9 @@ export const text_light = chroma("black").alpha(0.6);
 
 export const disabled = chroma("black").alpha(0.4);
 export const divider = chroma("black").alpha(0.25);
+
+export const background = chroma.hex("#FCFCFC");
+export const card_disabled = chroma.hex("#EEEEEE");
 
 const makeShadow = (z: number) => {
   const style = css`

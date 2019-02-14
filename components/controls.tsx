@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
-import { pink, text_dark, divider, text_light, opacity } from "./styles";
-import { animated } from "react-spring";
 import { Flex } from "@rebass/grid";
+import { animated } from "react-spring";
+import { divider, opacity, pink, text_dark, text_light } from "./styles";
 
 export const Button = styled.button`
   color: ${pink.css()};
@@ -31,12 +31,20 @@ export const Button = styled.button`
 export const Link = styled.a`
   font-family: Arial;
   text-decoration: none;
-  color: ${text_light.css()};
+  color: ${pink.css()};
   font-size: 14px;
   cursor: pointer;
 
   &:hover {
-    color: ${text_light.darken(0.5).css()};
+    color: ${pink.alpha(1 - opacity(pink, "hover")).css()};
+  }
+
+  &:focus {
+    color: ${pink.alpha(1 - opacity(pink, "focus")).css()};
+  }
+
+  &:active {
+    color: ${pink.alpha(1 - opacity(pink, "pressed")).css()};
   }
 `;
 
@@ -48,17 +56,18 @@ export const Form = styled.form`
 `;
 export const AnimatedFlex = animated(Flex);
 
-export const FormHeader = styled(AnimatedFlex)`
+export const FormHeader = styled(Flex)`
+  flex: 1;
   margin: 16px 0;
   padding: 8px 16px;
   border-bottom: 1px solid ${text_dark.css()};
 `;
 
-export const FormRow = styled(AnimatedFlex)`
+export const FormRow = styled(Flex)`
+  flex: 1;
   flex-direction: column;
   padding: 8px 16px;
   margin-bottom: 16px;
-  flex: 1;
 `;
 
 export const Input = styled.input`

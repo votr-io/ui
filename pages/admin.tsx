@@ -13,11 +13,9 @@ import {
 import { Page } from "../components/page";
 import { Headline } from "../components/typography";
 import { PageProps } from "../components/types";
+import { usePageTransition } from "../components/pageTransition";
 
 const AdminElection: React.FC<PageProps> = props => {
-  const isEntering = props.transitionState === "enter";
-  const isExiting = props.transitionState === "exit";
-
   const formElements = [
     <FormHeader>
       <Headline>Create an election</Headline>
@@ -32,12 +30,11 @@ const AdminElection: React.FC<PageProps> = props => {
     </FormRow>
   ];
 
-  const trail = useTrail(formElements.length, {
-    config: config.default,
-    x: isExiting ? 0 : 1,
-    from: { x: isEntering ? 0 : 1 },
-    onRest: props.onTransitionComplete
-  });
+  const trail = usePageTransition(
+    formElements.length,
+    props.transitionState,
+    props.onTransitionComplete
+  );
 
   const animate = (i: number) => {
     const t = trail[i];

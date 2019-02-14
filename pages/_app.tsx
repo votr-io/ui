@@ -2,6 +2,14 @@ import React from "react";
 import App, { Container, NextAppContext } from "next/app";
 import { NextComponentType } from "next";
 import { TransitionState, PageProps } from "../components/types";
+import { Global, css } from "@emotion/core";
+import { background } from "../components/styles";
+
+const globalStyles = css`
+  body {
+    background: ${background.css()};
+  }
+`;
 
 interface State {
   Component: NextComponentType<PageProps>;
@@ -61,7 +69,6 @@ export default class MyApp extends App<{}, State> {
   }
 
   private onTransitionComplete = () => {
-    console.log("onCOmpelte");
     this.setState(s => {
       const transitionState = s.transitionState === "exit" ? "enter" : "none";
       const Component =
@@ -76,11 +83,6 @@ export default class MyApp extends App<{}, State> {
         return null;
       }
 
-      console.log("setState", {
-        transitionState,
-        Component,
-        path
-      });
       return {
         transitionState,
         Component,
@@ -95,6 +97,7 @@ export default class MyApp extends App<{}, State> {
 
     return (
       <Container>
+        <Global styles={globalStyles} />
         <Component
           {...pageProps}
           path={path}
