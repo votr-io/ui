@@ -1,19 +1,17 @@
 import { Flex } from "@rebass/grid/emotion";
 import React from "react";
-import { config, useTrail } from "react-spring";
 import {
+  AnimatedFlex,
   Form,
   FormHeader,
   FormRow,
   Input,
-  Label,
-  Button,
-  AnimatedFlex
+  Label
 } from "../components/controls";
 import { Page } from "../components/page";
-import { Headline } from "../components/typography";
-import { PageProps } from "../components/types";
 import { usePageTransition } from "../components/pageTransition";
+import { PageProps } from "../components/types";
+import { Headline } from "../components/typography";
 
 const AdminElection: React.FC<PageProps> = props => {
   const formElements = [

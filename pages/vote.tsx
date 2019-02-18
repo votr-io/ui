@@ -1,17 +1,16 @@
-import { PageProps } from "../components/types";
 import styled from "@emotion/styled-base";
+import { Flex } from "@rebass/grid/emotion";
+import chroma from "chroma-js";
 import { AnimatedFlex } from "../components/controls";
 import {
-  pink,
   card_disabled,
-  elevations,
   disabled,
-  gradient_light,
-  gradient_dark
+  elevations,
+  gradient_dark,
+  gradient_light
 } from "../components/styles";
-import { Flex } from "@rebass/grid/emotion";
+import { PageProps } from "../components/types";
 import { Bold, Text } from "../components/typography";
-import chroma from "chroma-js";
 
 const CandidateCard = styled(AnimatedFlex)`
   border-radius: 4px;
