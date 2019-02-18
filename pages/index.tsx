@@ -2,18 +2,18 @@ import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import NextLink from "next/link";
 import { animated } from "react-spring";
-import { Button, Link } from "../components/controls";
-import { Page } from "../components/page";
-import { usePageTransition } from "../components/pageTransition";
-import { ROUTES } from "../components/routes";
+import { Button, Link } from "../src/components/controls";
+import { Page } from "../src/components/page";
+import { usePageTransition } from "../src/components/pageTransition";
+import { ROUTES } from "../src/components/routes";
 import {
   elevations,
   gradient_dark,
   gradient_light,
   pink
-} from "../components/styles";
-import { PageProps } from "../components/types";
-import { Headline, Subtitle } from "../components/typography";
+} from "../src/components/styles";
+import { PageProps } from "../src/components/types";
+import { Headline, Subtitle } from "../src/components/typography";
 
 const AnimatedFlex = animated(Flex);
 

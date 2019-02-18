@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import * as next from "next";
 import { parse } from "url";
-import { matchRoute } from "./components/routes";
+import { matchRoute } from "./src/components/routes";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });

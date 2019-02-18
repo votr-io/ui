@@ -1,16 +1,16 @@
 import styled from "@emotion/styled-base";
 import { Flex } from "@rebass/grid/emotion";
 import chroma from "chroma-js";
-import { AnimatedFlex } from "../components/controls";
+import { AnimatedFlex } from "../src/components/controls";
 import {
   card_disabled,
   disabled,
   elevations,
   gradient_dark,
   gradient_light
-} from "../components/styles";
-import { PageProps } from "../components/types";
-import { Bold, Text } from "../components/typography";
+} from "../src/components/styles";
+import { PageProps } from "../src/components/types";
+import { Bold, Text } from "../src/components/typography";
 
 const CandidateCard = styled(AnimatedFlex)`
   border-radius: 4px;

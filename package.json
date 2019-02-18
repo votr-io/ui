@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "ts-node server.ts",
     "build": "next build",
+    "generate": "apollo-client-codegen  generate:apolloHooks -s https://votr-graphql.herokuapp.com/graphql",
     "start": "NODE_ENV=production ts-node server.ts"
   },
   "author": "",
@@ -18,10 +19,15 @@
     "@types/next": "^7.0.9",
     "@types/rebass__grid": "^6.0.2",
     "@zeit/next-typescript": "^1.1.1",
+    "apollo-boost": "^0.1.28",
+    "apollo-client": "^2.4.13",
     "babel-plugin-emotion": "^10.0.7",
     "chroma-js": "^2.0.2",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
     "next": "^7.0.2",
     "react": "^16.8.1",
+    "react-apollo-hooks": "^0.4.0",
     "react-dom": "^16.8.1",
     "react-spring": "^8.0.4",
     "ts-node": "^8.0.2",
@@ -30,6 +36,7 @@
   "devDependencies": {
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
+    "apollo-client-codegen": "0.0.7",
     "babel-plugin-styled-components": "^1.10.0"
   }
 }

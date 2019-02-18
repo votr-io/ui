@@ -1,0 +1,7 @@
+mutation createElection($input: CreateElectionRequest!) {
+  createElection(input: $input) {
+    election {
+      id
+    }
+  }
+}

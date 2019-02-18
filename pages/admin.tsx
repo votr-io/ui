@@ -7,24 +7,36 @@ import {
   FormRow,
   Input,
   Label
-} from "../components/controls";
-import { Page } from "../components/page";
-import { usePageTransition } from "../components/pageTransition";
-import { PageProps } from "../components/types";
-import { Headline } from "../components/typography";
+} from "../src/components/controls";
+import { Page } from "../src/components/page";
+import { usePageTransition } from "../src/components/pageTransition";
+import { PageProps } from "../src/components/types";
+import { Headline } from "../src/components/typography";
+import { useGetElection } from "../src/generated/apolloHooks";
 
 const AdminElection: React.FC<PageProps> = props => {
+  const id = props.path.split("/")[2];
+  const hasId = id === null;
+
+  console.log(id);
+
+  const { loading, error, data } = useGetElection({ id: id });
+
   const formElements = [
     <FormHeader>
-      <Headline>Create an election</Headline>
+      <Headline>{hasId ? "Manage Election" : "Create Election"}</Headline>
     </FormHeader>,
     <FormRow>
       <Label htmlFor="name">Election Name</Label>
       <Input name="name" autoFocus />
     </FormRow>,
     <FormRow>
-      <Label htmlFor="age">Election Name</Label>
-      <Input name="age" />
+      <Label htmlFor="description">Description</Label>
+      <Input name="description" />
+    </FormRow>,
+    <FormRow>
+      <Label htmlFor="description">Candidates</Label>
+      <Input name="description" />
     </FormRow>
   ];
 

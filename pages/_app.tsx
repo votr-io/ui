@@ -1,9 +1,11 @@
 import React from "react";
 import App, { Container, NextAppContext } from "next/app";
 import { NextComponentType } from "next";
-import { TransitionState, PageProps } from "../components/types";
+import { TransitionState, PageProps } from "../src/components/types";
 import { Global, css } from "@emotion/core";
-import { background } from "../components/styles";
+import { background } from "../src/components/styles";
+import { ApolloProvider } from "react-apollo-hooks";
+import Client from "apollo-boost";
 
 const globalStyles = css`
   body {
@@ -23,6 +25,7 @@ type Props = PropTypes<App>;
 export default class MyApp extends App<{}, State> {
   private nextComponent: NextComponentType<PageProps>;
   private nextPath: string;
+  private client: Client<{}> = {};
 
   static async getInitialProps(context: NextAppContext) {
     const { Component, router, ctx } = context;
@@ -48,6 +51,12 @@ export default class MyApp extends App<{}, State> {
     };
     this.nextComponent = Component;
     this.nextPath = path;
+  }
+
+  componentDidMount() {
+    this.client = new Client({
+      uri: "https://votr-graphql.herokuapp.com"
+    });
   }
 
   shouldComponentUpdate(props: Props) {
@@ -97,13 +106,15 @@ export default class MyApp extends App<{}, State> {
 
     return (
       <Container>
-        <Global styles={globalStyles} />
-        <Component
-          {...pageProps}
-          path={path}
-          transitionState={transitionState}
-          onTransitionComplete={this.onTransitionComplete}
-        />
+        <ApolloProvider client={this.client}>
+          <Global styles={globalStyles} />
+          <Component
+            {...pageProps}
+            path={path}
+            transitionState={transitionState}
+            onTransitionComplete={this.onTransitionComplete}
+          />
+        </ApolloProvider>
       </Container>
     );
   }

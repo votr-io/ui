@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Flex } from "@rebass/grid";
+import { Flex } from "@rebass/grid/emotion";
 import { animated } from "react-spring";
 import { divider, opacity, pink, text_dark, text_light } from "./styles";
 
