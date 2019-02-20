@@ -6,8 +6,19 @@ import { Global, css } from "@emotion/core";
 import { background } from "../src/components/styles";
 import { ApolloProvider } from "react-apollo-hooks";
 import Client from "apollo-boost";
+import "cross-fetch/polyfill";
 
 const globalStyles = css`
+  html,
+  body,
+  #__next {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
   body {
     background: ${background.css()};
   }
@@ -25,7 +36,9 @@ type Props = PropTypes<App>;
 export default class MyApp extends App<{}, State> {
   private nextComponent: NextComponentType<PageProps>;
   private nextPath: string;
-  private client: Client<{}> = {};
+  private client: Client<{}> = new Client({
+    uri: "https://votr-graphql.herokuapp.com"
+  });
 
   static async getInitialProps(context: NextAppContext) {
     const { Component, router, ctx } = context;
@@ -51,12 +64,6 @@ export default class MyApp extends App<{}, State> {
     };
     this.nextComponent = Component;
     this.nextPath = path;
-  }
-
-  componentDidMount() {
-    this.client = new Client({
-      uri: "https://votr-graphql.herokuapp.com"
-    });
   }
 
   shouldComponentUpdate(props: Props) {

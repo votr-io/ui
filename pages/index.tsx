@@ -8,9 +8,11 @@ import { usePageTransition } from "../src/components/pageTransition";
 import { ROUTES } from "../src/components/routes";
 import {
   elevations,
+  foreground,
   gradient_dark,
   gradient_light,
-  pink
+  pink,
+  background
 } from "../src/components/styles";
 import { PageProps } from "../src/components/types";
 import { Headline, Subtitle } from "../src/components/typography";
@@ -21,7 +23,7 @@ const Panel = styled(animated.div)`
   display: flex;
   flex-direction: column;
   flex: 1;
-  background: #fcfcfc;
+  background: ${background.css()};
 `;
 
 const Purple = styled(Flex)`

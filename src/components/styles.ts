@@ -13,19 +13,22 @@ export const text_light = chroma("black").alpha(0.6);
 export const disabled = chroma("black").alpha(0.4);
 export const divider = chroma("black").alpha(0.25);
 
-export const background = chroma.hex("#FCFCFC");
-export const card_disabled = chroma.hex("#EEEEEE");
+export const background = chroma.hex("#eee");
+export const foreground = chroma.hex("#f7f7f7");
+export const card = chroma.hex("#fff");
 
-const makeShadow = (z: number) => {
+export const makeShadow = (z: number) => {
   const style = css`
-    box-shadow: 0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),
-      0 ${z / 2}px ${z / 2}px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 0 ${z * 4}px rgba(0, 0, 0, 0.12),
+      0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),
+      0 ${z / 2}px ${z}px rgba(0, 0, 0, 0.12);
     z-index: ${z};
   `;
 
   return Object.assign(style, {
     inset: css`
-      box-shadow: inset 0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),
+      box-shadow: inset 0 0 ${z * 4}px rgba(0, 0, 0, 0.12),
+        inset 0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),
         inset 0 ${z / 2}px ${z / 2}px rgba(0, 0, 0, 0.24);
     `
   });

@@ -18,6 +18,12 @@ export const Headline = styled(Text)`
   line-height: 36px;
 `;
 
+export const Subheader = styled(Text)`
+  font-family: Arial;
+  font-size: 18px;
+  line-height: 24px;
+`;
+
 export const Subtitle = styled(Text)`
   font-size: 18px;
   line-height: 24px;

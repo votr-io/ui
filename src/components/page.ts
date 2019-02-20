@@ -1,3 +1,4 @@
+import { background } from "./styles";
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 
@@ -9,7 +10,7 @@ export const Page = styled(Flex)`
   left: 0;
   flex: 1;
   flex-direction: row;
-  background: #fcfcfc;
+  background: ${background.css()};
   padding: 16px;
   overflow: auto;
 `;

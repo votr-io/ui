@@ -2,6 +2,13 @@
   "version": 1,
   "operations": [
     {
+      "signature": "01ca9532fa736b353b5a02f95753fb359777611622332dc11de1a0b12be0aa73",
+      "document": "mutation createElection($input:CreateElectionRequest!){createElection(input:$input){__typename election{__typename id}}}",
+      "metadata": {
+        "engineSignature": "mutation createElection($input:CreateElectionRequest!){createElection(input:$input){__typename election{__typename id}}}"
+      }
+    },
+    {
       "signature": "24c66e7d367a25dd2e2d3b786d1d12589ae0a9e6dfb91dc22a7354a7e9ed42ae",
       "document": "query GetElection($id:ID!){getElections(input:{ids:[$id]}){__typename elections{__typename candidates{__typename description id name}description id name status}}}",
       "metadata": {

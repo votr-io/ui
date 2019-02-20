@@ -23,6 +23,7 @@
     "apollo-client": "^2.4.13",
     "babel-plugin-emotion": "^10.0.7",
     "chroma-js": "^2.0.2",
+    "cross-fetch": "^3.0.1",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
     "next": "^7.0.2",

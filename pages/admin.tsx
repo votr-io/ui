@@ -1,5 +1,5 @@
 import { Flex } from "@rebass/grid/emotion";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   AnimatedFlex,
   Form,
@@ -12,19 +12,15 @@ import { Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { PageProps } from "../src/components/types";
 import { Headline } from "../src/components/typography";
-import { useGetElection } from "../src/generated/apolloHooks";
+import { CandidateListInput } from "../src/components/candidateList";
+import { CreateCandidateInput } from "../src/generated/globalTypes";
 
 const AdminElection: React.FC<PageProps> = props => {
-  const id = props.path.split("/")[2];
-  const hasId = id === null;
-
-  console.log(id);
-
-  const { loading, error, data } = useGetElection({ id: id });
+  const [candidates, setCandidates] = useState<CreateCandidateInput[]>([]);
 
   const formElements = [
     <FormHeader>
-      <Headline>{hasId ? "Manage Election" : "Create Election"}</Headline>
+      <Headline>Create Election</Headline>
     </FormHeader>,
     <FormRow>
       <Label htmlFor="name">Election Name</Label>
@@ -34,10 +30,7 @@ const AdminElection: React.FC<PageProps> = props => {
       <Label htmlFor="description">Description</Label>
       <Input name="description" />
     </FormRow>,
-    <FormRow>
-      <Label htmlFor="description">Candidates</Label>
-      <Input name="description" />
-    </FormRow>
+    <CandidateListInput value={candidates} onChange={setCandidates} />
   ];
 
   const trail = usePageTransition(
@@ -57,7 +50,7 @@ const AdminElection: React.FC<PageProps> = props => {
   return (
     <Page>
       <Flex flex="1" flexDirection="column" alignItems="center">
-        <Form>
+        <Flex flexDirection="column" width="480px">
           {formElements.map((El, i) => {
             return (
               <AnimatedFlex key={i} style={animate(i)}>
@@ -65,7 +58,7 @@ const AdminElection: React.FC<PageProps> = props => {
               </AnimatedFlex>
             );
           })}
-        </Form>
+        </Flex>
       </Flex>
     </Page>
   );

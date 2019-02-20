@@ -14,7 +14,19 @@ export enum ElectionStatus {
   CLOSED = "CLOSED",
   OPEN = "OPEN",
   PENDING = "PENDING",
-  TALLYING = "TALLYING",
+  TALLYING = "TALLYING"
+}
+
+export interface stCreateCandidateInput {
+  name: string;
+  description?: string | null;
+}
+
+export interface CreateElectionRequest {
+  name: string;
+  description: string;
+  candidates: CreateCandidateInput[];
+  email?: string | null;
 }
 
 //==============================================================

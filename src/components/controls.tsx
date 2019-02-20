@@ -15,16 +15,23 @@ export const Button = styled.button`
   outline: none;
   cursor: pointer;
 
-  &:hover {
-    background: ${pink.alpha(opacity(pink, "hover")).css()};
+  &[disabled] {
+    opacity: 0.38;
+    cursor: default;
   }
 
-  &:focus {
-    background: ${pink.alpha(opacity(pink, "focus")).css()};
-  }
+  &:not([disabled]) {
+    &:hover {
+      background: ${pink.alpha(opacity(pink, "hover")).css()};
+    }
 
-  &:active {
-    background: ${pink.alpha(opacity(pink, "pressed")).css()};
+    &:focus {
+      background: ${pink.alpha(opacity(pink, "focus")).css()};
+    }
+
+    &:active {
+      background: ${pink.alpha(opacity(pink, "pressed")).css()};
+    }
   }
 `;
 
@@ -51,7 +58,6 @@ export const Link = styled.a`
 export const Form = styled.form`
   flex: 1 0 auto;
   display: flex;
-  width: 480px;
   flex-direction: column;
 `;
 export const AnimatedFlex = animated(Flex);
