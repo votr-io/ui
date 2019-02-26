@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React, { useCallback, ChangeEvent } from "react";
 import { AnimatedFlex, Input } from "./controls";
-import { card, makeShadow } from "./styles";
+import { card, makeShadow, pink, divider } from "./styles";
 import { Bold, Text } from "./typography";
 import { Candidate, PropTypes } from "./types";
 import { Flex } from "@rebass/grid/emotion";
@@ -12,19 +12,41 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   border-radius: 4px;
   border-left: 4px solid #6e6e6e;
   background: ${card.css()};
-  padding: 8px 16px;
+  padding: 4px 16px;
   margin: 8px 0;
   ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
 `;
 
-interface CandidateCardProps {
+const Editable = styled(Flex)<{ contentEditable?: boolean }>`
+  flex: 1 0 auto;
+  padding: 4px 0 3px;
+  border-bottom: 1px solid
+    ${p => (p.contentEditable ? divider.css() : "transparent")};
+  margin-bottom: 0.5 em;
+  outline: none;
+  transition: border-color 0.2s ease-out;
+
+  &:focus {
+    border-color: ${pink.css()};
+  }
+`;
+
+interface Props {
+  editable?: boolean;
   candidate?: Candidate;
+  onChange?: (c: Candidate) => void;
   borderColor?: string;
 }
 
-export const CandidateCard: React.FC<
-  CandidateCardProps & PropTypes<typeof Card>
-> = ({ children, candidate, borderColor, elevation, ...otherProps }) => {
+export const CandidateCard: React.FC<Props & PropTypes<typeof Card>> = ({
+  children,
+  editable,
+  onChange,
+  candidate,
+  borderColor,
+  elevation,
+  ...otherProps
+}) => {
   return (
     <Card
       {...otherProps}
@@ -35,74 +57,14 @@ export const CandidateCard: React.FC<
         children
       ) : (
         <Flex flex="1" flexDirection="column" justifyContent="space-around">
-          <Flex flex="1 0 auto" pb="0.5em">
+          <Editable contentEditable={editable}>
             <Bold>{candidate.name}</Bold>
-          </Flex>
-          <Flex flex="1 0 auto">
+          </Editable>
+          <Editable contentEditable={editable}>
             <Text>{candidate.description}</Text>
-          </Flex>
+          </Editable>
         </Flex>
       )}
     </Card>
-  );
-};
-
-interface EditableCandidateCardProps {
-  name?: string;
-  candidate: Candidate;
-  onCandidateChange: (value: Candidate) => void;
-}
-
-export const EditableCandidateCard: React.FC<
-  EditableCandidateCardProps & PropTypes<typeof CandidateCard>
-> = ({
-  name,
-  candidate: value,
-  onCandidateChange: onChange,
-  ...otherProps
-}) => {
-  const onNameChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      onChange({
-        ...value,
-        name: e.target.value
-      });
-    },
-    [value]
-  );
-
-  const onDescriptionChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      onChange({
-        ...value,
-        description: e.target.value
-      });
-    },
-    [value]
-  );
-
-  return (
-    <CandidateCard {...otherProps}>
-      <Flex flexDirection="column" justifyContent="space-around">
-        <Flex flex="1" flexDirection="column">
-          <Input
-            id={name}
-            placeholder="name"
-            value={value.name}
-            onChange={onNameChange}
-            required
-            maxLength={50}
-          />
-        </Flex>
-        <Flex flex="1" flexDirection="column">
-          <Input
-            placeholder="description (optional)"
-            value={value.description}
-            onChange={onDescriptionChange}
-            maxLength={80}
-          />
-        </Flex>
-      </Flex>
-    </CandidateCard>
   );
 };

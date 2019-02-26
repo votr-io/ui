@@ -3,6 +3,7 @@ import { Flex } from "@rebass/grid/emotion";
 import { CandidateCard } from "../src/components/candidateCard";
 import { Candidate } from "../src/components/types";
 import { background, foreground } from "../src/components/styles";
+import { EditableCandidateCard } from "../src/components/editableCandidateCard";
 
 // 50 / 80
 
@@ -42,9 +43,13 @@ export default () => {
           style={{ background: foreground.css(), padding: 16 }}
         >
           {testCandidates.map(c => (
-            <CandidateCard candidate={c} key={c.id} />
+            <CandidateCard
+              editable
+              candidate={c}
+              key={c.id}
+              onChange={() => {}}
+            />
           ))}
-          <CandidateCard>HERES SOME TEST CONTENT</CandidateCard>
         </Flex>
       </Flex>
       <Flex flex="1" flexDirection="column" alignItems="center">
