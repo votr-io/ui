@@ -10,13 +10,12 @@ import {
 } from "../src/components/controls";
 import { Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
-import { PageProps } from "../src/components/types";
+import { PageProps, Candidate } from "../src/components/types";
 import { Headline } from "../src/components/typography";
 import { CandidateListInput } from "../src/components/candidateList";
-import { CreateCandidateInput } from "../src/generated/globalTypes";
 
 const AdminElection: React.FC<PageProps> = props => {
-  const [candidates, setCandidates] = useState<CreateCandidateInput[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   const formElements = [
     <FormHeader>
@@ -24,11 +23,11 @@ const AdminElection: React.FC<PageProps> = props => {
     </FormHeader>,
     <FormRow>
       <Label htmlFor="name">Election Name</Label>
-      <Input name="name" autoFocus />
+      <Input id="name" autoFocus />
     </FormRow>,
     <FormRow>
       <Label htmlFor="description">Description</Label>
-      <Input name="description" />
+      <Input id="description" />
     </FormRow>,
     <CandidateListInput value={candidates} onChange={setCandidates} />
   ];
@@ -49,15 +48,22 @@ const AdminElection: React.FC<PageProps> = props => {
 
   return (
     <Page>
-      <Flex flex="1" flexDirection="column" alignItems="center">
-        <Flex flexDirection="column" width="480px">
-          {formElements.map((El, i) => {
-            return (
-              <AnimatedFlex key={i} style={animate(i)}>
-                {El}
-              </AnimatedFlex>
-            );
-          })}
+      <Flex
+        flex="1"
+        style={{ overflow: "auto" }}
+        flexDirection="column"
+        alignItems="center"
+      >
+        <Flex flex="0 0 auto" flexDirection="column" alignItems="center">
+          <Flex flexDirection="column" width="480px">
+            {formElements.map((El, i) => {
+              return (
+                <AnimatedFlex key={i} style={animate(i)}>
+                  {El}
+                </AnimatedFlex>
+              );
+            })}
+          </Flex>
         </Flex>
       </Flex>
     </Page>

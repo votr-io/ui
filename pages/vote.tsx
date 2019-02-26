@@ -31,6 +31,7 @@ const VoteContainer = styled(Flex)`
 
 const CandidateContainer = styled(VoteContainer)`
   ${makeShadow(2).inset}
+  border-radius: 2px;
 `;
 
 const Header = styled(Flex)`
@@ -78,7 +79,12 @@ const VotePage: React.FC<PageProps> = props => {
         </Header>
         <Flex flexDirection="row" flex="1 0 auto">
           <Flex flexDirection="column" flex="1" p="8px 16px">
-            <Flex pb="16px" justifyContent="center" flex="0 0 auto">
+            <Flex
+              pb="16px"
+              justifyContent="center"
+              flex="0 0 auto"
+              style={{ borderBottom: `1px solid ${divider.css()}` }}
+            >
               <Subheader>Candidates</Subheader>
             </Flex>
             <VoteContainer>
@@ -99,7 +105,7 @@ const VotePage: React.FC<PageProps> = props => {
             </Flex>
             <Flex flexDirection="column" flex="1">
               <CandidateContainer>
-                {election.candidates.map((candidate, i) => (
+                {/* {election.candidates.map((candidate, i) => (
                   <CandidateCard
                     key={i}
                     candidate={candidate}
@@ -107,7 +113,7 @@ const VotePage: React.FC<PageProps> = props => {
                       i / (election.candidates.length - 1)
                     ).css()}
                   />
-                ))}
+                ))} */}
               </CandidateContainer>
             </Flex>
           </Flex>

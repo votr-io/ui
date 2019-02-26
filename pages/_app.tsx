@@ -1,7 +1,7 @@
 import React from "react";
 import App, { Container, NextAppContext } from "next/app";
 import { NextComponentType } from "next";
-import { TransitionState, PageProps } from "../src/components/types";
+import { TransitionState, PageProps, PropTypes } from "../src/components/types";
 import { Global, css } from "@emotion/core";
 import { background } from "../src/components/styles";
 import { ApolloProvider } from "react-apollo-hooks";
@@ -30,7 +30,6 @@ interface State {
   transitionState: TransitionState;
 }
 
-type PropTypes<T> = T extends React.Component<infer R, any> ? R : never;
 type Props = PropTypes<App>;
 
 export default class MyApp extends App<{}, State> {

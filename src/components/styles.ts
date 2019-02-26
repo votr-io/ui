@@ -17,19 +17,23 @@ export const background = chroma.hex("#eee");
 export const foreground = chroma.hex("#f7f7f7");
 export const card = chroma.hex("#fff");
 
-export const makeShadow = (z: number) => {
+export const makeShadow = (elevation: number) => {
   const style = css`
-    box-shadow: 0 0 ${z * 4}px rgba(0, 0, 0, 0.12),
-      0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),
-      0 ${z / 2}px ${z}px rgba(0, 0, 0, 0.12);
-    z-index: ${z};
+    z-index: ${elevation};
+    box-shadow: 0px ${elevation}px ${elevation * 1.5}px ${elevation * 0.1}px
+        rgba(0, 0, 0, 0.14),
+      0px ${elevation * 0.4}px ${elevation * 1.9}px ${elevation * 0.3}px
+        rgba(0, 0, 0, 0.12),
+      0px ${elevation * 0.5}px ${elevation * 0.75}px rgba(0, 0, 0, 0.2);
   `;
 
   return Object.assign(style, {
     inset: css`
-      box-shadow: inset 0 0 ${z * 4}px rgba(0, 0, 0, 0.12),
-        inset 0 ${z}px ${z * 2}px rgba(0, 0, 0, 0.12),
-        inset 0 ${z / 2}px ${z / 2}px rgba(0, 0, 0, 0.24);
+      box-shadow: inset 0px ${elevation}px ${elevation * 1.5}px
+          ${elevation * 0.1}px rgba(0, 0, 0, 0.14),
+        inset 0px ${elevation * 0.4}px ${elevation * 1.9}px ${elevation * 0.3}px
+          rgba(0, 0, 0, 0.12),
+        inset 0px ${elevation * 0.5}px ${elevation * 0.75}px rgba(0, 0, 0, 0.2);
     `
   });
 };
