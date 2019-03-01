@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Flex } from "@rebass/grid/emotion";
 import { CandidateCard } from "../src/components/candidateCard";
 import { Candidate } from "../src/components/types";
@@ -18,10 +18,17 @@ const testCandidates: Candidate[] = [
     id: "4",
     name: MAX_NAME,
     description: MAX_DESCRIPTION
+  },
+  {
+    id: "5",
+    name: MAX_NAME.replace(/./gm, "M"),
+    description: MAX_DESCRIPTION.replace(/./gm, "M")
   }
 ];
 
 export default () => {
+  const [candidate, setCandidate] = useState(testCandidates[0]);
+
   return (
     <Flex flex="1" style={{ overflow: "auto" }} flexDirection="row">
       <Flex flex="1" flexDirection="column" alignItems="center">
@@ -33,7 +40,6 @@ export default () => {
           {testCandidates.map(c => (
             <CandidateCard candidate={c} key={c.id} />
           ))}
-          <CandidateCard>HERES SOME TEST CONTENT</CandidateCard>
         </Flex>
       </Flex>
       <Flex flex="1" flexDirection="column" alignItems="center">
@@ -42,14 +48,11 @@ export default () => {
           flex="1 0 auto"
           style={{ background: foreground.css(), padding: 16 }}
         >
-          {testCandidates.map(c => (
-            <CandidateCard
-              editable
-              candidate={c}
-              key={c.id}
-              onChange={() => {}}
-            />
-          ))}
+          <CandidateCard
+            editable
+            candidate={candidate}
+            onCandidateChange={setCandidate}
+          />
         </Flex>
       </Flex>
       <Flex flex="1" flexDirection="column" alignItems="center">
@@ -61,7 +64,6 @@ export default () => {
           {testCandidates.map(c => (
             <CandidateCard candidate={c} key={c.id} />
           ))}
-          <CandidateCard>HERES SOME TEST CONTENT</CandidateCard>
         </Flex>
       </Flex>
     </Flex>
