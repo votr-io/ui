@@ -1,18 +1,10 @@
 import styled from "@emotion/styled";
-import React, {
-  useCallback,
-  ChangeEvent,
-  useMemo,
-  useEffect,
-  useRef,
-  useLayoutEffect
-} from "react";
-import { renderToString } from "react-dom/server";
-import { AnimatedFlex, Input } from "./controls";
-import { card, makeShadow, pink, divider } from "./styles";
-import { Bold, Text } from "./typography";
-import { Candidate, PropTypes } from "./types";
 import { Flex } from "@rebass/grid/emotion";
+import React, { useCallback, useLayoutEffect } from "react";
+import { AnimatedFlex } from "./controls";
+import { card, divider, makeShadow, pink } from "./styles";
+import { Candidate, PropTypes } from "./types";
+import { Bold, Text } from "./typography";
 
 const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   max-width: 320px;
@@ -26,7 +18,6 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
 `;
 
 const TEXTAREA_PADDING = 4;
-const PADDING_BOTTOM = 3;
 const Editable = styled.textarea<{ disabled?: boolean }>`
   position: relative;
   flex: 1 0 auto;
@@ -47,9 +38,10 @@ const BoldEditable = Bold.withComponent(Editable);
 const TextEditable = Text.withComponent(Editable);
 
 interface Props {
-  editable?: boolean;
   candidate: Candidate;
+  editable?: boolean;
   onCandidateChange?: (c: Candidate) => void;
+  onEnter?: () => void;
   borderColor?: string;
 }
 
@@ -73,6 +65,7 @@ export const CandidateCard: React.FC<
     candidate,
     borderColor,
     elevation,
+    onEnter,
     ...otherProps
   }) => {
     const $name = React.createRef<HTMLTextAreaElement>();
@@ -88,7 +81,7 @@ export const CandidateCard: React.FC<
           name: removeNewlines(e.target.value)
         });
       },
-      [candidate]
+      [candidate, onCandidateChange]
     );
 
     const onDescriptionChange = useCallback(
@@ -101,7 +94,16 @@ export const CandidateCard: React.FC<
           description: removeNewlines(e.target.value)
         });
       },
-      [candidate]
+      [candidate, onCandidateChange]
+    );
+
+    const onKeyPress = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (onEnter != null && e.which === 13) {
+          onEnter();
+        }
+      },
+      [onEnter]
     );
 
     useLayoutEffect(() => {
@@ -109,7 +111,6 @@ export const CandidateCard: React.FC<
       resize($description.current);
     });
 
-    console.log("card render");
     return (
       <Card
         {...otherProps}
@@ -121,21 +122,24 @@ export const CandidateCard: React.FC<
         ) : (
           <Flex flex="1" flexDirection="column" justifyContent="space-around">
             <BoldEditable
-              placeholder="name"
+              id={otherProps.id == null ? undefined : `${otherProps.id}-name`}
+              ref={$name}
+              placeholder="name (required)"
               rows={1}
               value={candidate.name}
               onChange={onNameChange}
-              ref={$name}
+              onKeyPress={onKeyPress}
               maxLength={50}
-              required
               disabled={!editable}
+              required
             />
             <TextEditable
+              ref={$description}
               placeholder="description"
               rows={1}
               value={candidate.description}
               onChange={onDescriptionChange}
-              ref={$description}
+              onKeyPress={onKeyPress}
               maxLength={80}
               disabled={!editable}
             />

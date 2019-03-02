@@ -5,7 +5,9 @@ import { Flex } from "@rebass/grid/emotion";
 import { Input } from "./controls";
 import styled from "@emotion/styled";
 
-const InlineInput = styled.input;
+const InlineInput = styled.input`
+
+`;
 
 interface Props {
   name?: string;
@@ -15,7 +17,7 @@ interface Props {
 
 export const EditableCandidateCard: React.FC<
   Props & PropTypes<typeof CandidateCard>
-> = ({ name, candidate: value, onChange: onChange, ...otherProps }) => {
+> = ({ name, candidate: value, onCandidateChange: onChange, ...otherProps }) => {
   const onNameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       onChange({

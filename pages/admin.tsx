@@ -1,8 +1,8 @@
 import { Flex } from "@rebass/grid/emotion";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
+import { CandidateListInput } from "../src/components/candidateList";
 import {
   AnimatedFlex,
-  Form,
   FormHeader,
   FormRow,
   Input,
@@ -10,9 +10,8 @@ import {
 } from "../src/components/controls";
 import { Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
-import { PageProps, Candidate } from "../src/components/types";
+import { Candidate, PageProps } from "../src/components/types";
 import { Headline } from "../src/components/typography";
-import { CandidateListInput } from "../src/components/candidateList";
 
 const AdminElection: React.FC<PageProps> = props => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);

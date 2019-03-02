@@ -1,12 +1,18 @@
-import React from "react";
-import App, { Container, NextAppContext } from "next/app";
-import { NextComponentType } from "next";
-import { TransitionState, PageProps, PropTypes } from "../src/components/types";
-import { Global, css } from "@emotion/core";
-import { background } from "../src/components/styles";
-import { ApolloProvider } from "react-apollo-hooks";
+import { css, Global } from "@emotion/core";
 import Client from "apollo-boost";
 import "cross-fetch/polyfill";
+import { NextComponentType } from "next";
+import App, {
+  AppProps,
+  Container,
+  DefaultAppIProps,
+  NextAppContext
+} from "next/app";
+import React from "react";
+import { ApolloProvider } from "react-apollo-hooks";
+import NoSSR from "react-no-ssr";
+import { background } from "../src/components/styles";
+import { PageProps, TransitionState } from "../src/components/types";
 
 const globalStyles = css`
   html,
@@ -30,7 +36,7 @@ interface State {
   transitionState: TransitionState;
 }
 
-type Props = PropTypes<App>;
+type Props = DefaultAppIProps & AppProps;
 
 export default class MyApp extends App<{}, State> {
   private nextComponent: NextComponentType<PageProps>;
@@ -111,17 +117,19 @@ export default class MyApp extends App<{}, State> {
     const { Component, transitionState, path } = this.state;
 
     return (
-      <Container>
-        <ApolloProvider client={this.client}>
-          <Global styles={globalStyles} />
-          <Component
-            {...pageProps}
-            path={path}
-            transitionState={transitionState}
-            onTransitionComplete={this.onTransitionComplete}
-          />
-        </ApolloProvider>
-      </Container>
+      <NoSSR>
+        <Container>
+          <ApolloProvider client={this.client}>
+            <Global styles={globalStyles} />
+            <Component
+              {...pageProps}
+              path={path}
+              transitionState={transitionState}
+              onTransitionComplete={this.onTransitionComplete}
+            />
+          </ApolloProvider>
+        </Container>
+      </NoSSR>
     );
   }
 }

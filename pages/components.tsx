@@ -1,13 +1,12 @@
-import React, { useState } from "react";
 import { Flex } from "@rebass/grid/emotion";
+import React, { useState } from "react";
 import { CandidateCard } from "../src/components/candidateCard";
+import { foreground } from "../src/components/styles";
 import { Candidate } from "../src/components/types";
-import { background, foreground } from "../src/components/styles";
-import { EditableCandidateCard } from "../src/components/editableCandidateCard";
 
 // 50 / 80
 
-const MAX_NAME = "Lorem ipsum dolor sit amet, consectetuer adipiscing elitasdf";
+const MAX_NAME = "Lorem ipsum dolor sit amet, consectetuer adipiscin";
 const MAX_DESCRIPTION =
   "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula.";
 const testCandidates: Candidate[] = [
