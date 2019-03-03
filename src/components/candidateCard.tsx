@@ -1,11 +1,12 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
-import React, { useCallback, useLayoutEffect } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { AnimatedFlex } from "./controls";
 import { card, divider, makeShadow, pink } from "./styles";
 import { Candidate, PropTypes } from "./types";
 import { Bold, Text } from "./typography";
 
+export const CARD_MARGIN = 8;
 const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   max-width: 320px;
   min-height: 60px;
@@ -13,7 +14,7 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   border-left: 4px solid #6e6e6e;
   background: ${card.css()};
   padding: 4px 16px;
-  margin: 8px 0;
+  margin: ${CARD_MARGIN}px 0;
   ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
 `;
 
@@ -41,7 +42,7 @@ interface Props {
   candidate: Candidate;
   editable?: boolean;
   onCandidateChange?: (c: Candidate) => void;
-  onEnter?: () => void;
+  onEnter?: (c: Candidate) => void;
   borderColor?: string;
 }
 
@@ -58,94 +59,137 @@ const removeNewlines = (str: string) => str.replace(/(\r\n|\n|\r)/gm, "");
 export const CandidateCard: React.FC<
   Props & PropTypes<typeof Card>
 > = React.memo(
-  ({
-    children,
-    editable,
-    onCandidateChange,
-    candidate,
-    borderColor,
-    elevation,
-    onEnter,
-    ...otherProps
-  }) => {
-    const $name = React.createRef<HTMLTextAreaElement>();
-    const $description = React.createRef<HTMLTextAreaElement>();
-
-    const onNameChange = useCallback(
-      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        if (candidate == null || onCandidateChange == null) {
-          return;
-        }
-        onCandidateChange({
-          ...candidate,
-          name: removeNewlines(e.target.value)
-        });
+  React.forwardRef(
+    (
+      {
+        children,
+        editable,
+        onCandidateChange,
+        candidate,
+        borderColor,
+        elevation,
+        onEnter,
+        onFocus,
+        onBlur,
+        ...otherProps
       },
-      [candidate, onCandidateChange]
-    );
+      ref
+    ) => {
+      const $name = React.createRef<HTMLTextAreaElement>();
+      const $description = React.createRef<HTMLTextAreaElement>();
 
-    const onDescriptionChange = useCallback(
-      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        if (candidate == null || onCandidateChange == null) {
-          return;
-        }
-        onCandidateChange({
-          ...candidate,
-          description: removeNewlines(e.target.value)
-        });
-      },
-      [candidate, onCandidateChange]
-    );
+      const isFocused = useRef(false);
+      const blurTimeout = useRef(0);
+      const onCardFocus = useCallback(
+        (e: React.FocusEvent<HTMLDivElement>) => {
+          isFocused.current = true;
+          if (onFocus == null) {
+            return;
+          }
+          onFocus(e);
+        },
+        [onFocus]
+      );
 
-    const onKeyPress = useCallback(
-      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (onEnter != null && e.which === 13) {
-          onEnter();
-        }
-      },
-      [onEnter]
-    );
+      const onCardBlur = useCallback(
+        (e: React.FocusEvent<HTMLDivElement>) => {
+          isFocused.current = false;
+          if (onBlur == null || isFocused.current) {
+            return;
+          }
+          window.clearTimeout(blurTimeout.current);
+          blurTimeout.current = window.setTimeout(() => {
+            if (isFocused.current) {
+              return;
+            }
+            onBlur(e);
+          }, 0);
+        },
+        [onBlur]
+      );
 
-    useLayoutEffect(() => {
-      resize($name.current);
-      resize($description.current);
-    });
+      const onNameChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+          if (candidate == null || onCandidateChange == null) {
+            return;
+          }
+          onCandidateChange({
+            ...candidate,
+            name: removeNewlines(e.target.value)
+          });
+        },
+        [candidate, onCandidateChange]
+      );
 
-    return (
-      <Card
-        {...otherProps}
-        style={{ borderColor: borderColor || "#555", ...otherProps.style }}
-        elevation={elevation || 2}
-      >
-        {candidate == null || children ? (
-          children
-        ) : (
-          <Flex flex="1" flexDirection="column" justifyContent="space-around">
-            <BoldEditable
-              id={otherProps.id == null ? undefined : `${otherProps.id}-name`}
-              ref={$name}
-              placeholder="name (required)"
-              rows={1}
-              value={candidate.name}
-              onChange={onNameChange}
-              onKeyPress={onKeyPress}
-              maxLength={50}
-              disabled={!editable}
-              required
-            />
-            <TextEditable
-              ref={$description}
-              placeholder="description"
-              rows={1}
-              value={candidate.description}
-              onChange={onDescriptionChange}
-              onKeyPress={onKeyPress}
-              maxLength={80}
-              disabled={!editable}
-            />
-          </Flex>
-        )}
-      </Card>
-    );
-  }
+      const onDescriptionChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+          if (candidate == null || onCandidateChange == null) {
+            return;
+          }
+          onCandidateChange({
+            ...candidate,
+            description: removeNewlines(e.target.value)
+          });
+        },
+        [candidate, onCandidateChange]
+      );
+
+      const onKeyPress = useCallback(
+        (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+          if (e.which === 13) {
+            e.preventDefault();
+            if (onEnter != null) {
+              onEnter(candidate);
+            }
+          }
+        },
+        [onEnter]
+      );
+
+      useLayoutEffect(() => {
+        resize($name.current);
+        resize($description.current);
+      });
+
+      return (
+        <Card
+          {...otherProps}
+          style={{ borderColor: borderColor || "#555", ...otherProps.style }}
+          elevation={elevation || 2}
+          onFocus={onCardFocus}
+          onBlur={onCardBlur}
+          ref={ref}
+        >
+          {candidate == null || children ? (
+            children
+          ) : (
+            <Flex flex="1" flexDirection="column" justifyContent="space-around">
+              <BoldEditable
+                id={otherProps.id == null ? undefined : `${otherProps.id}-name`}
+                ref={$name}
+                placeholder="name (required)"
+                rows={1}
+                value={candidate.name}
+                onChange={onNameChange}
+                onKeyPress={onKeyPress}
+                maxLength={50}
+                disabled={!editable}
+                required
+              />
+              <TextEditable
+                ref={$description}
+                placeholder="description"
+                rows={1}
+                value={candidate.description}
+                onChange={onDescriptionChange}
+                onKeyPress={onKeyPress}
+                maxLength={80}
+                disabled={!editable}
+              />
+            </Flex>
+          )}
+        </Card>
+      );
+    }
+  )
 );

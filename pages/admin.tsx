@@ -6,12 +6,12 @@ import {
   FormHeader,
   FormRow,
   Input,
-  Label
+  Button
 } from "../src/components/controls";
 import { Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
-import { Headline } from "../src/components/typography";
+import { Bold, Caption, Headline } from "../src/components/typography";
 
 const AdminElection: React.FC<PageProps> = props => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -21,14 +21,47 @@ const AdminElection: React.FC<PageProps> = props => {
       <Headline>Create Election</Headline>
     </FormHeader>,
     <FormRow>
-      <Label htmlFor="name">Election Name</Label>
+      <label htmlFor="name">
+        <Bold>Election Name</Bold>
+        <p>
+          <Caption>A brief title describing what this election is for.</Caption>
+        </p>
+      </label>
       <Input id="name" autoFocus />
     </FormRow>,
     <FormRow>
-      <Label htmlFor="description">Description</Label>
+      <label htmlFor="description">
+        <Bold>Description</Bold>
+        <p>
+          <Caption>Additional information about the election.</Caption>
+        </p>
+      </label>
       <Input id="description" />
     </FormRow>,
-    <CandidateListInput value={candidates} onChange={setCandidates} />
+    <FormRow>
+      <Flex flexDirection="row" alignItems="center">
+        <Flex flex="1">
+          <label htmlFor="description">
+            <Bold>Candidates</Bold>
+            <p>
+              <Caption>
+                List the candidates competing in this election. Order does not
+                matter here.
+              </Caption>
+            </p>
+          </label>
+        </Flex>
+        <Flex>
+          <Button
+            style={{ width: 48, minWidth: 48, height: 48, borderRadius: "50%" }}
+          >
+            +
+          </Button>
+        </Flex>
+      </Flex>
+
+      <CandidateListInput value={candidates} onChange={setCandidates} />
+    </FormRow>
   ];
 
   const trail = usePageTransition(

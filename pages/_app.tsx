@@ -8,6 +8,7 @@ import App, {
   DefaultAppIProps,
   NextAppContext
 } from "next/app";
+import Head from "next/head";
 import React from "react";
 import { ApolloProvider } from "react-apollo-hooks";
 import NoSSR from "react-no-ssr";
@@ -27,6 +28,11 @@ const globalStyles = css`
   }
   body {
     background: ${background.css()};
+    font-family: "Source Sans Pro", sans-serif;
+  }
+
+  p {
+    margin: 4px 0;
   }
 `;
 
@@ -118,6 +124,12 @@ export default class MyApp extends App<{}, State> {
 
     return (
       <NoSSR>
+        <Head key="fonts">
+          <link
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro"
+            rel="stylesheet"
+          />
+        </Head>
         <Container>
           <ApolloProvider client={this.client}>
             <Global styles={globalStyles} />

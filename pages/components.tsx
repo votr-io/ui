@@ -41,19 +41,7 @@ export default () => {
           ))}
         </Flex>
       </Flex>
-      <Flex flex="1" flexDirection="column" alignItems="center">
-        <Flex
-          flexDirection="column"
-          flex="1 0 auto"
-          style={{ background: foreground.css(), padding: 16 }}
-        >
-          <CandidateCard
-            editable
-            candidate={candidate}
-            onCandidateChange={setCandidate}
-          />
-        </Flex>
-      </Flex>
+      <Flex flex="1" flexDirection="column" alignItems="center" />
       <Flex flex="1" flexDirection="column" alignItems="center">
         <Flex
           flexDirection="column"

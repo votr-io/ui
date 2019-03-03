@@ -11,7 +11,7 @@ import {
   foreground
 } from "../src/components/styles";
 import { PageProps } from "../src/components/types";
-import { Headline, Subheader, Text } from "../src/components/typography";
+import { Headline, Subtitle, Text } from "../src/components/typography";
 
 const gradient = chroma.scale([gradient_dark, gradient_light]);
 
@@ -85,7 +85,7 @@ const VotePage: React.FC<PageProps> = props => {
               flex="0 0 auto"
               style={{ borderBottom: `1px solid ${divider.css()}` }}
             >
-              <Subheader>Candidates</Subheader>
+              <Subtitle>Candidates</Subtitle>
             </Flex>
             <VoteContainer>
               {election.candidates.map((candidate, i) => (
@@ -101,7 +101,7 @@ const VotePage: React.FC<PageProps> = props => {
           </Flex>
           <Flex flexDirection="column" flex="2" p="8px 16px">
             <Flex pb="16px" justifyContent="center" flex="0 0 auto">
-              <Subheader>Ballot</Subheader>
+              <Subtitle>Ballot</Subtitle>
             </Flex>
             <Flex flexDirection="column" flex="1">
               <CandidateContainer>

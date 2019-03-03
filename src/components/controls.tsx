@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import { animated } from "react-spring";
-import { divider, opacity, pink, text_dark, text_light } from "./styles";
+import { divider, opacity, pink, text_dark, text_light, white } from "./styles";
+import { Bold } from "./typography";
 
 export const Button = styled.button`
   color: ${pink.css()};
@@ -74,7 +75,7 @@ export const FormRow = styled(Flex)`
   flex: 1;
   flex-direction: column;
   padding: 8px 16px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 `;
 
 export const Input = styled.input`
@@ -82,9 +83,8 @@ export const Input = styled.input`
   font-size: 14px;
   border: 1px solid ${divider.css()};
   border-radius: 2px;
-  padding: 4px 8px;
-  margin: 0 -8px;
-  background: none;
+  padding: 8px;
+  background: ${white.css()};
   box-sizing: border-box;
 
   outline: none;
@@ -99,10 +99,4 @@ export const Input = styled.input`
   }
 `;
 
-export const Label = styled.label`
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  color: ${text_light.css()};
-  margin-bottom: 8px;
-`;
+export const Label = Bold.withComponent(styled.label());

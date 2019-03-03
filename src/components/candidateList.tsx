@@ -7,8 +7,7 @@ import React, {
   useRef
 } from "react";
 import { Flex } from "@rebass/grid/emotion";
-import { Form, FormRow, Input, Button, Label } from "./controls";
-import { CandidateCard } from "./candidateCard";
+import { CandidateCard, CARD_MARGIN } from "./candidateCard";
 import { Candidate } from "./types";
 import { useTransition } from "react-spring";
 
@@ -17,12 +16,33 @@ interface Props {
   onChange: (value: Candidate[]) => void;
 }
 
+/**
+ * How it works:
+ * 1) Render full list of candidates
+ * 2) render 1 additional half opacity card for the edit model
+ * 4) Once we have typed anything in the editmodel, it is pushed into the collection, new editmodel appears
+ * 5) If we delete all text from an entry, it is removed from the collection on blur
+ */
+
 let id = 0;
 const nextId = () => `${++id}`;
 
+interface CardPosition {
+  y: number;
+  height: number;
+}
+
+function getNextY(positions: CardPosition[]): number {
+  if (positions.length === 0) {
+    return CARD_MARGIN;
+  }
+
+  const prevPosition = positions[positions.length - 1];
+  return prevPosition.y + prevPosition.height + CARD_MARGIN * 2;
+}
+
 export const CandidateListInput: React.FC<Props> = props => {
   const { value, onChange } = props;
-  console.log("in list", value);
 
   const [editModel, setEditModel] = useState<Candidate>({
     id: `${id}`,
@@ -30,31 +50,82 @@ export const CandidateListInput: React.FC<Props> = props => {
     description: ""
   });
 
-  const [positions, setPositions] = useState<{ y: number; height: number }[]>(
-    []
+  const [positions, setPositions] = useState<CardPosition[]>([]);
+
+  const cards = useMemo(() => value.concat(editModel), [editModel, value]);
+  const cardRefs = useMemo(
+    () => cards.map(() => React.createRef<HTMLDivElement>()),
+    [cards.length]
   );
 
-  const cards = useMemo(() => [editModel, ...value], [editModel, value]);
+  useEffect(() => {
+    setPositions(
+      cardRefs.reduce<CardPosition[]>((positions, ref, i) => {
+        const nextPosition = {
+          y: getNextY(positions),
+          height: ref.current == null ? 0 : ref.current.clientHeight
+        };
 
-  let focusFirstInput = useRef(false);
-  const onSubmit = useCallback(
-    (e?: React.FormEvent) => {
-      if (e != null) {
-        e.preventDefault();
+        return positions.concat(nextPosition);
+      }, [])
+    );
+  }, [cards]);
+
+  const transitions = useTransition(
+    cards.map((candidate, i) => {
+      let position = positions[i];
+      if (i >= positions.length) {
+        position = { y: getNextY(positions), height: 0 };
       }
-      focusFirstInput.current = true;
-      if (editModel.name === "") {
-        return;
-      }
-      onChange([editModel, ...value]);
-      setEditModel({
-        id: nextId(),
-        name: "",
-        description: ""
-      });
-    },
-    [onChange, editModel]
+      return {
+        candidate,
+        ...position
+      };
+    }),
+    item => item.candidate.id,
+    {
+      unique: true,
+      trail: 15,
+      from: ({ y }) => ({
+        transform: `translateY(${y}px) scale(0)`,
+        opacity: 0
+      }),
+      enter: ({ y, candidate }) => ({
+        transform: `translateY(${y}px) scale(1)`,
+        opacity: candidate.id === editModel.id ? 0.5 : 1
+      }),
+      leave: ({ y }) => ({
+        transform: `translateY(${y}px) scale(0)`,
+        opacity: 0
+      }),
+      update: ({ y, candidate }) => ({
+        transform: `translateY(${y}px) scale(1)`,
+        opacity: candidate.id === editModel.id ? 0.5 : 1
+      })
+    }
   );
+
+  const onEnter = (candidate: Candidate) => {
+    const i = cards.findIndex(card => card.id === candidate.id);
+    const nextCard = cardRefs[i + 1];
+    if (nextCard == null || nextCard.current == null) {
+      return;
+    }
+    const nameInput = nextCard.current.querySelector("textarea");
+    if (nameInput == null) {
+      return;
+    }
+    nameInput.focus();
+  };
+
+  const onBlur = useCallback(() => {
+    const nextValue = value.filter(
+      candidate => candidate.name !== "" || candidate.description != ""
+    );
+    if (nextValue.length != value.length) {
+      onChange(nextValue);
+    }
+  }, [value, onChange]);
 
   const updateCandidate = useCallback(
     (candidate: Candidate) => {
@@ -67,99 +138,41 @@ export const CandidateListInput: React.FC<Props> = props => {
     [onChange, value]
   );
 
-  useEffect(() => {
-    let sum = 28;
-    setPositions(
-      cards.map((card, i) => {
-        const el = document.getElementById(`card-${card.id}`);
-        if (el == null) {
-          return { y: 0, height: 0 };
-        }
-        if (i === 0 && focusFirstInput.current) {
-          const input = el.querySelector("textarea");
-          if (input) input.focus();
-          focusFirstInput.current = false;
-        }
-        const y = sum;
-        const height = el.clientHeight;
-        sum += height + 16;
-
-        return {
-          y,
-          height
-        };
-      })
-    );
-  }, [cards]);
-
-  const transitions = useTransition(
-    cards.map((candidate, i) => {
-      const position = positions[i] || { y: 0, height: 0 };
-      return {
-        id: candidate.id,
-        ...position
-      };
-    }),
-    v => v.id,
-    {
-      unique: true,
-      // trail: 15,
-      from: ({ y, height }) => ({
-        transform: `translateY(${y - height / 2}px) scale(0)`,
-        opacity: 0
-      }),
-      enter: ({ y }) => ({
-        transform: `translateY(${y}px) scale(1)`,
-        opacity: 1
-      }),
-      leave: ({ y, height }) => ({
-        transform: `translateY(${y - height}px) scale(0)`,
-        opacity: 1
-      }),
-      update: ({ y }) => ({
-        transform: `translateY(${y}px) scale(1)`,
-        opacity: 1
-      })
-    }
+  const appendEditModel = useCallback(
+    (candidate: Candidate) => {
+      onChange(value.concat(candidate));
+      setEditModel({
+        id: nextId(),
+        name: "",
+        description: ""
+      });
+    },
+    [onChange, value]
   );
 
   return (
-    <Flex flex="1">
-      <FormRow>
-        {transitions.map(({ item, key, props }, i) => {
-          if (i === 0) {
-            return (
-              <Form onSubmit={onSubmit} key={key}>
-                <Label htmlFor={`card-${item.id}-name`}>Candidates</Label>
-                <Flex flex="1" flexDirection="row" alignItems="center">
-                  <CandidateCard
-                    id={`card-${item.id}`}
-                    candidate={editModel}
-                    onCandidateChange={setEditModel}
-                    onEnter={onSubmit}
-                    editable
-                    style={{ position: "absolute", top: 0, ...props }}
-                  />
-                  <Flex flex="1" />
-                  <Button onClick={onSubmit}>Add</Button>
-                </Flex>
-              </Form>
-            );
-          }
-
-          const candidate = cards[i];
-          return (
-            <CandidateCard
-              key={key}
-              id={`card-${item.id}`}
-              candidate={candidate}
-              onCandidateChange={updateCandidate}
-              editable
-              style={{ position: "absolute", top: 0, ...props }}
-            />
-          );
-        })}
-      </FormRow>
+    <Flex flex="1" flexDirection="column" style={{ position: "relative" }}>
+      {transitions.map(({ item, props }, i) => {
+        const { candidate } = item;
+        const isEditModel = candidate.id === editModel.id;
+        return (
+          <CandidateCard
+            key={candidate.id}
+            ref={cardRefs[i]}
+            candidate={candidate}
+            onCandidateChange={isEditModel ? appendEditModel : updateCandidate}
+            editable
+            style={{
+              position: "absolute",
+              transformOrigin: "50% 0%",
+              zIndex: transitions.length - i,
+              ...props
+            }}
+            onBlur={isEditModel ? undefined : onBlur}
+            onEnter={onEnter}
+          />
+        );
+      })}
     </Flex>
   );
 };
