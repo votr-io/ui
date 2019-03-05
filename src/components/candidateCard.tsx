@@ -172,7 +172,7 @@ export const CandidateCard: React.FC<
               <BoldEditable
                 id={otherProps.id == null ? undefined : `${otherProps.id}-name`}
                 ref={$name}
-                placeholder="name*"
+                placeholder="name"
                 rows={1}
                 value={candidate.name}
                 onChange={onNameChange}
@@ -183,7 +183,7 @@ export const CandidateCard: React.FC<
               />
               <TextEditable
                 ref={$description}
-                placeholder="description"
+                placeholder="description (optional)"
                 rows={1}
                 value={candidate.description}
                 onChange={onDescriptionChange}

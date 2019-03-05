@@ -1,16 +1,23 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import { animated } from "react-spring";
-import { divider, opacity, pink, text_dark, text_light, white } from "./styles";
+import {
+  divider,
+  opacity,
+  purple,
+  text_dark,
+  text_light,
+  white
+} from "./styles";
 import { Bold } from "./typography";
 
 export const Button = styled.button`
-  color: ${pink.css()};
+  color: ${purple.css()};
   font-size: 16px;
   font-weight: bold;
   padding: 8px 16px;
   min-width: 64px;
-  border: 2px solid ${pink.css()};
+  border: 2px solid ${purple.css()};
   border-radius: 2px;
   background: none;
   outline: none;
@@ -23,15 +30,15 @@ export const Button = styled.button`
 
   &:not([disabled]) {
     &:hover {
-      background: ${pink.alpha(opacity(pink, "hover")).css()};
+      background: ${purple.alpha(opacity(purple, "hover")).css()};
     }
 
     &:focus {
-      background: ${pink.alpha(opacity(pink, "focus")).css()};
+      background: ${purple.alpha(opacity(purple, "focus")).css()};
     }
 
     &:active {
-      background: ${pink.alpha(opacity(pink, "pressed")).css()};
+      background: ${purple.alpha(opacity(purple, "pressed")).css()};
     }
   }
 `;
@@ -61,11 +68,11 @@ export const IconButton = styled.button`
     }
 
     &:focus {
-      color: ${pink.css()};
+      color: ${purple.css()};
     }
 
     &:active {
-      color: ${pink.css()};
+      color: ${purple.css()};
     }
   }
 `;
@@ -73,20 +80,20 @@ export const IconButton = styled.button`
 export const Link = styled.a`
   font-family: Arial;
   text-decoration: none;
-  color: ${pink.css()};
+  color: ${purple.css()};
   font-size: 14px;
   cursor: pointer;
 
   &:hover {
-    color: ${pink.alpha(1 - opacity(pink, "hover")).css()};
+    color: ${purple.alpha(1 - opacity(purple, "hover")).css()};
   }
 
   &:focus {
-    color: ${pink.alpha(1 - opacity(pink, "focus")).css()};
+    color: ${purple.alpha(1 - opacity(purple, "focus")).css()};
   }
 
   &:active {
-    color: ${pink.alpha(1 - opacity(pink, "pressed")).css()};
+    color: ${purple.alpha(1 - opacity(purple, "pressed")).css()};
   }
 `;
 
@@ -99,9 +106,7 @@ export const AnimatedFlex = animated(Flex);
 
 export const FormHeader = styled(Flex)`
   flex: 1;
-  margin: 16px 0;
   padding: 8px 16px;
-  border-bottom: 1px solid ${text_dark.css()};
 `;
 
 export const FormRow = styled(Flex)`
@@ -115,11 +120,12 @@ export const FormRow = styled(Flex)`
 export const Input = styled.input`
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
+  padding: 7px;
   border: 1px solid ${divider.css()};
   border-radius: 2px;
-  padding: 8px;
   background: ${white.css()};
   box-sizing: border-box;
+  margin: 0 -8px;
 
   outline: none;
   transition: border-color 0.15s ease-out;
@@ -129,7 +135,7 @@ export const Input = styled.input`
   }
 
   &:focus {
-    border-color: ${pink.css()};
+    border-color: ${purple.css()};
   }
 
   &::placeholder {

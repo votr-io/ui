@@ -8,7 +8,7 @@ import {
   Input,
   Button
 } from "../src/components/controls";
-import { Page } from "../src/components/page";
+import { Page, Content } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
@@ -43,7 +43,7 @@ const AdminElection: React.FC<PageProps> = props => {
 
   const formElements = [
     <FormHeader>
-      <Headline>Create Election</Headline>
+      <Headline>Create An Election</Headline>
     </FormHeader>,
     <FormRow>
       <label htmlFor="name">
@@ -56,9 +56,24 @@ const AdminElection: React.FC<PageProps> = props => {
     </FormRow>,
     <FormRow>
       <label htmlFor="description">
-        <Bold>Description</Bold>
+        <span>
+          <Bold>Description </Bold>
+          <Caption> (optional)</Caption>
+        </span>
         <p>
           <Caption>Additional information about the election.</Caption>
+        </p>
+      </label>
+      <Input id="description" />
+    </FormRow>,
+    <FormRow>
+      <label htmlFor="description">
+        <Bold>Email Address</Bold>
+        <p>
+          <Caption>
+            So we can send you a link to find and manage this election. We will
+            never share your contact info with anyone.
+          </Caption>
         </p>
       </label>
       <Input id="description" />
@@ -95,29 +110,22 @@ const AdminElection: React.FC<PageProps> = props => {
     const t = trail[i];
     return {
       opacity: t.x,
-      transform: t.x.interpolate(x => `translateX(${x * 10}px)`)
+      transform: t.x.interpolate(x => `translateX(${(1 - x) * 10}px)`)
     };
   };
 
   return (
     <Page>
-      <Flex
-        flex="1"
-        style={{ overflow: "auto", background: foreground.css() }}
-        flexDirection="column"
-        alignItems="center"
-      >
-        <Flex flex="0 0 auto" flexDirection="column" alignItems="center">
-          <Flex flexDirection="column" width="480px">
-            {formElements.map((El, i) => {
-              return (
-                <AnimatedFlex key={i} style={animate(i)}>
-                  {El}
-                </AnimatedFlex>
-              );
-            })}
-          </Flex>
-        </Flex>
+      <Flex flex="1" flexDirection="column" alignItems="center">
+        <Content flex="1 0 auto" flexDirection="column" p="8px">
+          {formElements.map((El, i) => {
+            return (
+              <AnimatedFlex key={i} style={animate(i)}>
+                {El}
+              </AnimatedFlex>
+            );
+          })}
+        </Content>
       </Flex>
     </Page>
   );

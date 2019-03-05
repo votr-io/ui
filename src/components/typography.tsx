@@ -1,10 +1,16 @@
 import styled from "@emotion/styled";
 import { text_dark, text_light } from "./styles";
+import css from "@emotion/css";
 
-export const Text = styled.span`
+export const BaseTextStyles = css`
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: ${text_dark.css()};
+`;
+
+export const Text = styled.span`
+  ${BaseTextStyles}
 `;
 
 export const Bold = styled(Text)`
@@ -16,7 +22,7 @@ export const Caption = styled(Text)`
 `;
 
 export const Headline = styled(Text)`
-  font-family: Arial Black;
+  font-weight: bold;
   font-size: 24px;
   line-height: 36px;
 `;

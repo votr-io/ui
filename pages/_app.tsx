@@ -13,6 +13,7 @@ import { ApolloProvider } from "react-apollo-hooks";
 import NoSSR from "react-no-ssr";
 import { background } from "../src/components/styles";
 import { PageProps, TransitionState } from "../src/components/types";
+import { BaseTextStyles } from "../src/components/typography";
 
 const globalStyles = css`
   html,
@@ -27,7 +28,7 @@ const globalStyles = css`
   }
   body {
     background: ${background.css()};
-    font-family: "Source Sans Pro", sans-serif;
+    ${BaseTextStyles}
   }
 
   p {
@@ -124,6 +125,10 @@ export default class MyApp extends App<{}, State> {
     return (
       <>
         <Head key="fonts">
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
+          />
           <link
             href="https://fonts.googleapis.com/css?family=Source+Sans+Pro"
             rel="stylesheet"

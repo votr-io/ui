@@ -1,10 +1,12 @@
 import { Flex } from "@rebass/grid/emotion";
 import React, { useState } from "react";
 import { CandidateCard } from "../src/components/candidateCard";
-import { foreground, pink, white } from "../src/components/styles";
+import { MultilineTextInput } from "../src/components/multilineTextInput";
+import { foreground, pink, white, background } from "../src/components/styles";
 import { Touchable } from "../src/components/touchable";
 4;
 import { Candidate } from "../src/components/types";
+import { Content } from "../src/components/page";
 
 // 50 / 80
 
@@ -28,28 +30,39 @@ const testCandidates: Candidate[] = [
 ];
 
 export default () => {
-  const [candidate, setCandidate] = useState(testCandidates[0]);
+  const [text, setText] = useState("");
 
   return (
     <Flex
       flex="1"
-      style={{ overflow: "auto" }}
+      flexDirection="column"
       alignItems="center"
-      justifyContent="center"
+      style={{ overflow: "auto" }}
     >
-      <Touchable ink={pink} surface={white}>
-        Hello world
-      </Touchable>
-      <Touchable ink={pink} surface={white}>
-        <div
-          style={{
-            border: "1px solid black",
-            borderRadius: 4,
-            height: 25,
-            width: 25
-          }}
+      <Content
+        flex="1 0 auto"
+        style={{ width: 800, padding: 16 }}
+        flexDirection="column"
+      >
+        <MultilineTextInput
+          value={text}
+          onChange={e => setText(e.target.value)}
+          maxLength={50}
         />
-      </Touchable>
+        <Touchable ink={pink} surface={white}>
+          Hello world
+        </Touchable>
+        <Touchable ink={pink} surface={white}>
+          <div
+            style={{
+              border: "1px solid black",
+              borderRadius: 4,
+              height: 25,
+              width: 25
+            }}
+          />
+        </Touchable>
+      </Content>
     </Flex>
   );
 };
