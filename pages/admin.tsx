@@ -12,6 +12,31 @@ import { Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
+import { FaPlusCircle } from "react-icons/fa";
+import { foreground } from "../src/components/styles";
+
+/**
+ * TODO:
+ * Take email address
+ *
+ * Candidate List:
+ * - Plus button
+ * - Minus buttons
+ * - Scroll to card when it recevies focus
+ *
+ * Form validation:
+ * - Input trimming
+ * - Character count on candidate cards
+ *
+ * Card Validation:
+ * - Name required
+ * - No empty names
+ * - No duplicated names
+ *
+ * Save Button
+ * - Login flow
+ * - Animate editing to side, show start election button
+ */
 
 const AdminElection: React.FC<PageProps> = props => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -46,17 +71,13 @@ const AdminElection: React.FC<PageProps> = props => {
             <p>
               <Caption>
                 List the candidates competing in this election. Order does not
-                matter here.
+                matter.
               </Caption>
             </p>
           </label>
         </Flex>
         <Flex>
-          <Button
-            style={{ width: 48, minWidth: 48, height: 48, borderRadius: "50%" }}
-          >
-            +
-          </Button>
+          <FaPlusCircle />
         </Flex>
       </Flex>
 
@@ -82,7 +103,7 @@ const AdminElection: React.FC<PageProps> = props => {
     <Page>
       <Flex
         flex="1"
-        style={{ overflow: "auto" }}
+        style={{ overflow: "auto", background: foreground.css() }}
         flexDirection="column"
         alignItems="center"
       >

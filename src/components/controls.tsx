@@ -36,6 +36,40 @@ export const Button = styled.button`
   }
 `;
 
+export const IconButton = styled.button`
+  outline: none;
+  border: none;
+  height: 48px;
+  width: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: ${text_light.css()};
+  background: none;
+  font-size: 24px;
+  transition: color 0.3s ease-out;
+
+  &[disabled] {
+    opacity: 0.38;
+    cursor: default;
+  }
+
+  &:not([disabled]) {
+    &:hover {
+      color: ${text_dark.css()};
+    }
+
+    &:focus {
+      color: ${pink.css()};
+    }
+
+    &:active {
+      color: ${pink.css()};
+    }
+  }
+`;
+
 export const Link = styled.a`
   font-family: Arial;
   text-decoration: none;
@@ -96,6 +130,11 @@ export const Input = styled.input`
 
   &:focus {
     border-color: ${pink.css()};
+  }
+
+  &::placeholder {
+    font-style: italic;
+    color: ${text_light.css()};
   }
 `;
 

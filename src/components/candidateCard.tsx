@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { AnimatedFlex } from "./controls";
-import { card, divider, makeShadow, pink } from "./styles";
+import { card, divider, makeShadow, pink, text_light } from "./styles";
 import { Candidate, PropTypes } from "./types";
 import { Bold, Text } from "./typography";
 
@@ -14,7 +14,6 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   border-left: 4px solid #6e6e6e;
   background: ${card.css()};
   padding: 4px 16px;
-  margin: ${CARD_MARGIN}px 0;
   ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
 `;
 
@@ -32,6 +31,12 @@ const Editable = styled.textarea<{ disabled?: boolean }>`
 
   &:focus {
     border-color: ${pink.css()};
+  }
+
+  &::placeholder {
+    font-style: italic;
+    color: ${text_light.css()};
+    font-weight: normal;
   }
 `;
 
@@ -167,7 +172,7 @@ export const CandidateCard: React.FC<
               <BoldEditable
                 id={otherProps.id == null ? undefined : `${otherProps.id}-name`}
                 ref={$name}
-                placeholder="name (required)"
+                placeholder="name*"
                 rows={1}
                 value={candidate.name}
                 onChange={onNameChange}

@@ -9,7 +9,10 @@ import React, {
 import { Flex } from "@rebass/grid/emotion";
 import { CandidateCard, CARD_MARGIN } from "./candidateCard";
 import { Candidate } from "./types";
-import { useTransition } from "react-spring";
+import { useTransition, animated } from "react-spring";
+import styled from "@emotion/styled";
+import { FaMinusCircle } from "react-icons/fa";
+import { IconButton } from "./controls";
 
 interface Props {
   value: Candidate[];
@@ -34,12 +37,28 @@ interface CardPosition {
 
 function getNextY(positions: CardPosition[]): number {
   if (positions.length === 0) {
-    return CARD_MARGIN;
+    return 0;
   }
 
   const prevPosition = positions[positions.length - 1];
-  return prevPosition.y + prevPosition.height + CARD_MARGIN * 2;
+  return prevPosition.y + prevPosition.height;
 }
+
+const CardRow = styled(animated.div)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
+  width: 100%;
+  padding: ${CARD_MARGIN}px;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease-out;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+`;
 
 export const CandidateListInput: React.FC<Props> = props => {
   const { value, onChange } = props;
@@ -51,6 +70,8 @@ export const CandidateListInput: React.FC<Props> = props => {
   });
 
   const [positions, setPositions] = useState<CardPosition[]>([]);
+  const [editModelHasFocus, setEditModelHasFocus] = useState(false);
+  console.log();
 
   const cards = useMemo(() => value.concat(editModel), [editModel, value]);
   const cardRefs = useMemo(
@@ -77,8 +98,10 @@ export const CandidateListInput: React.FC<Props> = props => {
       if (i >= positions.length) {
         position = { y: getNextY(positions), height: 0 };
       }
+      const isGhost = candidate.id === editModel.id && !editModelHasFocus;
       return {
         candidate,
+        isGhost,
         ...position
       };
     }),
@@ -90,17 +113,17 @@ export const CandidateListInput: React.FC<Props> = props => {
         transform: `translateY(${y}px) scale(0)`,
         opacity: 0
       }),
-      enter: ({ y, candidate }) => ({
+      enter: ({ y, isGhost }) => ({
         transform: `translateY(${y}px) scale(1)`,
-        opacity: candidate.id === editModel.id ? 0.5 : 1
+        opacity: isGhost ? 0.5 : 1
       }),
       leave: ({ y }) => ({
         transform: `translateY(${y}px) scale(0)`,
         opacity: 0
       }),
-      update: ({ y, candidate }) => ({
+      update: ({ y, isGhost }) => ({
         transform: `translateY(${y}px) scale(1)`,
-        opacity: candidate.id === editModel.id ? 0.5 : 1
+        opacity: isGhost ? 0.5 : 1
       })
     }
   );
@@ -118,7 +141,7 @@ export const CandidateListInput: React.FC<Props> = props => {
     nameInput.focus();
   };
 
-  const onBlur = useCallback(() => {
+  const onCardBlur = useCallback(() => {
     const nextValue = value.filter(
       candidate => candidate.name !== "" || candidate.description != ""
     );
@@ -138,6 +161,17 @@ export const CandidateListInput: React.FC<Props> = props => {
     [onChange, value]
   );
 
+  const removeCandidate = useCallback(
+    (candidate: Candidate) => {
+      const i = value.findIndex(c => c.id === candidate.id);
+      if (i < 0) {
+        return;
+      }
+      onChange([...value.slice(0, i), ...value.slice(i + 1)]);
+    },
+    [onChange, value]
+  );
+
   const appendEditModel = useCallback(
     (candidate: Candidate) => {
       onChange(value.concat(candidate));
@@ -146,9 +180,18 @@ export const CandidateListInput: React.FC<Props> = props => {
         name: "",
         description: ""
       });
+      setEditModelHasFocus(false);
     },
     [onChange, value]
   );
+
+  const onEditModelFocus = useCallback(() => {
+    setEditModelHasFocus(true);
+  }, []);
+
+  const onEditModelBlur = useCallback(() => {
+    setEditModelHasFocus(false);
+  }, []);
 
   return (
     <Flex flex="1" flexDirection="column" style={{ position: "relative" }}>
@@ -156,21 +199,32 @@ export const CandidateListInput: React.FC<Props> = props => {
         const { candidate } = item;
         const isEditModel = candidate.id === editModel.id;
         return (
-          <CandidateCard
+          <CardRow
             key={candidate.id}
             ref={cardRefs[i]}
-            candidate={candidate}
-            onCandidateChange={isEditModel ? appendEditModel : updateCandidate}
-            editable
             style={{
               position: "absolute",
               transformOrigin: "50% 0%",
               zIndex: transitions.length - i,
               ...props
             }}
-            onBlur={isEditModel ? undefined : onBlur}
-            onEnter={onEnter}
-          />
+          >
+            <CandidateCard
+              candidate={candidate}
+              onCandidateChange={
+                isEditModel ? appendEditModel : updateCandidate
+              }
+              editable
+              onFocus={isEditModel ? onEditModelFocus : undefined}
+              onBlur={isEditModel ? onEditModelBlur : onCardBlur}
+              onEnter={onEnter}
+            />
+            {isEditModel ? null : (
+              <IconButton onClick={() => removeCandidate(candidate)}>
+                <FaMinusCircle />
+              </IconButton>
+            )}
+          </CardRow>
         );
       })}
     </Flex>

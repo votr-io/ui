@@ -1,7 +1,9 @@
 import { Flex } from "@rebass/grid/emotion";
 import React, { useState } from "react";
 import { CandidateCard } from "../src/components/candidateCard";
-import { foreground } from "../src/components/styles";
+import { foreground, pink, white } from "../src/components/styles";
+import { Touchable } from "../src/components/touchable";
+4;
 import { Candidate } from "../src/components/types";
 
 // 50 / 80
@@ -29,30 +31,25 @@ export default () => {
   const [candidate, setCandidate] = useState(testCandidates[0]);
 
   return (
-    <Flex flex="1" style={{ overflow: "auto" }} flexDirection="row">
-      <Flex flex="1" flexDirection="column" alignItems="center">
-        <Flex
-          flexDirection="column"
-          flex="1 0 auto"
-          style={{ background: foreground.css(), padding: 16 }}
-        >
-          {testCandidates.map(c => (
-            <CandidateCard candidate={c} key={c.id} />
-          ))}
-        </Flex>
-      </Flex>
-      <Flex flex="1" flexDirection="column" alignItems="center" />
-      <Flex flex="1" flexDirection="column" alignItems="center">
-        <Flex
-          flexDirection="column"
-          flex="1 0 auto"
-          style={{ background: foreground.css(), padding: 16 }}
-        >
-          {testCandidates.map(c => (
-            <CandidateCard candidate={c} key={c.id} />
-          ))}
-        </Flex>
-      </Flex>
+    <Flex
+      flex="1"
+      style={{ overflow: "auto" }}
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Touchable ink={pink} surface={white}>
+        Hello world
+      </Touchable>
+      <Touchable ink={pink} surface={white}>
+        <div
+          style={{
+            border: "1px solid black",
+            borderRadius: 4,
+            height: 25,
+            width: 25
+          }}
+        />
+      </Touchable>
     </Flex>
   );
 };

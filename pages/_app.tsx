@@ -1,6 +1,5 @@
 import { css, Global } from "@emotion/core";
 import Client from "apollo-boost";
-import "cross-fetch/polyfill";
 import { NextComponentType } from "next";
 import App, {
   AppProps,
@@ -123,7 +122,7 @@ export default class MyApp extends App<{}, State> {
     const { Component, transitionState, path } = this.state;
 
     return (
-      <NoSSR>
+      <>
         <Head key="fonts">
           <link
             href="https://fonts.googleapis.com/css?family=Source+Sans+Pro"
@@ -131,17 +130,19 @@ export default class MyApp extends App<{}, State> {
           />
         </Head>
         <Container>
-          <ApolloProvider client={this.client}>
-            <Global styles={globalStyles} />
-            <Component
-              {...pageProps}
-              path={path}
-              transitionState={transitionState}
-              onTransitionComplete={this.onTransitionComplete}
-            />
-          </ApolloProvider>
+          <Global styles={globalStyles} />
+          <NoSSR>
+            <ApolloProvider client={this.client}>
+              <Component
+                {...pageProps}
+                path={path}
+                transitionState={transitionState}
+                onTransitionComplete={this.onTransitionComplete}
+              />
+            </ApolloProvider>
+          </NoSSR>
         </Container>
-      </NoSSR>
+      </>
     );
   }
 }
