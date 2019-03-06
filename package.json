@@ -33,6 +33,7 @@
     "react-icons": "^3.4.0",
     "react-no-ssr": "^1.1.0",
     "react-spring": "^8.0.4",
+    "react-use-form-state": "^0.7.0",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3"
   },

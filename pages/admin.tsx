@@ -1,19 +1,17 @@
 import { Flex } from "@rebass/grid/emotion";
 import React, { useState } from "react";
+import { FaPlusCircle } from "react-icons/fa";
+import { useFormState } from "react-use-form-state";
 import { CandidateListInput } from "../src/components/candidateList";
+import { AnimatedFlex, FormHeader, FormRow } from "../src/components/controls";
 import {
-  AnimatedFlex,
-  FormHeader,
-  FormRow,
-  Input,
-  Button
-} from "../src/components/controls";
-import { Page, Content } from "../src/components/page";
+  MultilineTextInput,
+  SingleLineTextInput
+} from "../src/components/multilineTextInput";
+import { Content, Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
-import { FaPlusCircle } from "react-icons/fa";
-import { foreground } from "../src/components/styles";
 
 /**
  * TODO:
@@ -38,7 +36,14 @@ import { foreground } from "../src/components/styles";
  * - Animate editing to side, show start election button
  */
 
+interface AdminForm {
+  name: string;
+  description: string;
+  email: string;
+}
+
 const AdminElection: React.FC<PageProps> = props => {
+  const [formState, { text }] = useFormState<AdminForm>();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   const formElements = [
@@ -52,7 +57,18 @@ const AdminElection: React.FC<PageProps> = props => {
           <Caption>A brief title describing what this election is for.</Caption>
         </p>
       </label>
-      <Input id="name" autoFocus />
+      <MultilineTextInput
+        autoFocus
+        id="name"
+        required
+        maxLength={100}
+        {...text("name")}
+        validationMessage={
+          formState.touched.name && !formState.validity.name
+            ? "election name is required"
+            : ""
+        }
+      />
     </FormRow>,
     <FormRow>
       <label htmlFor="description">
@@ -64,10 +80,14 @@ const AdminElection: React.FC<PageProps> = props => {
           <Caption>Additional information about the election.</Caption>
         </p>
       </label>
-      <Input id="description" />
+      <MultilineTextInput
+        id="description"
+        maxLength={100}
+        {...text("description")}
+      />
     </FormRow>,
     <FormRow>
-      <label htmlFor="description">
+      <label htmlFor="email">
         <Bold>Email Address</Bold>
         <p>
           <Caption>
@@ -76,7 +96,17 @@ const AdminElection: React.FC<PageProps> = props => {
           </Caption>
         </p>
       </label>
-      <Input id="description" />
+      <SingleLineTextInput
+        id="name"
+        required
+        type="email"
+        {...text("email")}
+        validationMessage={
+          formState.touched.email && !formState.validity.email
+            ? "valid email address required"
+            : ""
+        }
+      />
     </FormRow>,
     <FormRow>
       <Flex flexDirection="row" alignItems="center">
@@ -110,7 +140,7 @@ const AdminElection: React.FC<PageProps> = props => {
     const t = trail[i];
     return {
       opacity: t.x,
-      transform: t.x.interpolate(x => `translateX(${(1 - x) * 10}px)`)
+      transform: t.x.interpolate(x => `translateX(${(x - 1) * 10}px)`)
     };
   };
 

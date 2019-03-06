@@ -113,8 +113,7 @@ export const FormRow = styled(Flex)`
   position: relative;
   flex: 1;
   flex-direction: column;
-  padding: 8px 16px;
-  margin-bottom: 8px;
+  padding: 2px 16px;
 `;
 
 export const Input = styled.input`

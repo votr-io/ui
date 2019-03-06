@@ -32,7 +32,7 @@ const globalStyles = css`
   }
 
   p {
-    margin: 4px 0;
+    margin: 2px 0;
   }
 `;
 
@@ -47,9 +47,14 @@ type Props = DefaultAppIProps & AppProps;
 export default class MyApp extends App<{}, State> {
   private nextComponent: NextComponentType<PageProps>;
   private nextPath: string;
-  private client: Client<{}> = new Client({
-    uri: "https://votr-graphql.herokuapp.com"
-  });
+  //@ts-ignore
+  private client: Client<{}> = null;
+
+  componentDidMount() {
+    this.client = new Client({
+      uri: "https://votr-graphql.herokuapp.com"
+    });
+  }
 
   static async getInitialProps(context: NextAppContext) {
     const { Component, router, ctx } = context;

@@ -1,32 +1,41 @@
 import styled from "@emotion/styled";
-import { divider, pink, text_light, purple, white } from "./styles";
-import { Text, Caption } from "./typography";
-import React, { useRef, useLayoutEffect, useCallback, useMemo } from "react";
 import { Flex } from "@rebass/grid/emotion";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
+import { divider, pink, purple, text_light, white } from "./styles";
+import { Caption, Text } from "./typography";
 import { isString } from "util";
+import { css } from "@emotion/core";
 
-interface CharacterCounterProps {
-  isMax: boolean;
-}
-const CharacterCounter = styled(Caption)<CharacterCounterProps>`
+const CharacterCounter = styled(Caption)`
+  position: absolute;
+  right: 8px;
+  bottom: 0;
   transition: color 0.2s ease-out, opacity 0.2s ease-out;
-  color: ${p => (p.isMax ? pink.css() : text_light.css())};
+  color: ${text_light.css()};
+  opacity: 0;
 `;
 
-const VERTICAL_PADDING = 4;
-const TextArea = Text.withComponent(styled.textarea<CharacterCounterProps>`
+const ValidationError = styled(Caption)`
+  color: ${pink.css()};
+`;
+
+const VERTICAL_PADDING = 8;
+
+const textInputStyles = css``;
+
+const TextArea = Text.withComponent(styled.textarea`
   position: relative;
-  padding: ${VERTICAL_PADDING}px 8px;
+  padding: ${VERTICAL_PADDING}px 8px ${VERTICAL_PADDING - 1}px;
   border: 0px;
-  border-bottom: 1px solid ${divider.css()};
+  border: 1px solid ${divider.css()};
   outline: none;
   transition: border-color 0.2s ease-out;
   resize: none;
   background: ${white.css()};
-  border-radius: 4px 4px 0 0;
+  border-radius: 4px;
 
   &:focus {
-    border-color: ${purple.css()}};
+    border-color: ${purple.css()};
   }
 
   &::placeholder {
@@ -35,8 +44,12 @@ const TextArea = Text.withComponent(styled.textarea<CharacterCounterProps>`
     font-weight: normal;
   }
 
-  &:focus ${CharacterCounter} {
+  &:focus + ${CharacterCounter} {
     opacity: 1;
+  }
+
+  &:not(:valid) {
+    border-color: ${pink.css()};
   }
 `);
 
@@ -48,37 +61,70 @@ const resize = (el: HTMLTextAreaElement | null) => {
   el.style.height = `${el.scrollHeight - VERTICAL_PADDING * 2}px`;
 };
 
-export const MultilineTextInput: React.FC<
-  React.DetailedHTMLProps<
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    HTMLTextAreaElement
-  >
-> = React.memo(props => {
-  const { value, maxLength } = props;
-  const el = useRef<HTMLTextAreaElement>(null);
+type MultilineTextInputProps = React.TextareaHTMLAttributes<
+  HTMLTextAreaElement
+> & {
+  validationMessage?: string;
+};
 
-  const hasMaxLength = useMemo(() => maxLength != null && maxLength > 0, [
-    maxLength
-  ]);
-  const hasValue = useMemo(() => isString(value), [value]);
-  const isMax = useMemo(
-    () => hasMaxLength && hasValue && value.length >= maxLength,
-    [value, maxLength]
-  );
+export const MultilineTextInput: React.FC<MultilineTextInputProps> = React.memo(
+  ({ style, className, validationMessage, ...otherProps }) => {
+    const el = useRef<HTMLTextAreaElement>(null);
 
-  useLayoutEffect(() => {
-    resize(el.current);
-  });
+    useLayoutEffect(() => {
+      resize(el.current);
+    });
 
-  return (
-    <Flex flexDirection="column" mb="4px">
-      <TextArea rows={1} {...props} ref={el} isMax={isMax} />
-      <Flex flexDirection="row" justifyContent="flex-end" mt="0px">
-        {hasMaxLength ? (
-          <CharacterCounter isMax={isMax}>
-            {value.length}/{maxLength}
+    const maxLength = otherProps.maxLength || 0;
+    const length = isString(otherProps.value) && otherProps.value.length;
+
+    return (
+      <Flex
+        flexDirection="column"
+        mb="4px"
+        className={className}
+        style={{ position: "relative", ...style }}
+      >
+        <TextArea rows={1} ref={el} {...otherProps} />
+        {maxLength > 0 ? (
+          <CharacterCounter>
+            {length}/{maxLength}
           </CharacterCounter>
         ) : null}
+        <Flex pl="8px" pr="60px" style={{ height: 20 }}>
+          <ValidationError>{validationMessage}</ValidationError>
+        </Flex>
+      </Flex>
+    );
+  }
+);
+
+const TextInput = TextArea.withComponent(styled.input());
+
+type SingleLineTextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  validationMessage?: string;
+};
+export const SingleLineTextInput: React.FC<
+  SingleLineTextInputProps
+> = React.memo(({ style, className, validationMessage, ...otherProps }) => {
+  const maxLength = otherProps.maxLength || 0;
+  const length = isString(otherProps.value) && otherProps.value.length;
+
+  return (
+    <Flex
+      flexDirection="column"
+      mb="4px"
+      className={className}
+      style={{ position: "relative", ...style }}
+    >
+      <TextInput {...otherProps} />
+      {maxLength > 0 ? (
+        <CharacterCounter>
+          {length}/{maxLength}
+        </CharacterCounter>
+      ) : null}
+      <Flex pl="8px" pr="60px" style={{ height: 20 }}>
+        <ValidationError>{validationMessage}</ValidationError>
       </Flex>
     </Flex>
   );

@@ -46,11 +46,12 @@ export default () => {
       >
         <MultilineTextInput
           value={text}
-          onChange={e => setText(e.target.value)}
-          maxLength={50}
+          onChange={setText}
+          maxLength={500}
+          validationMessage={text}
         />
         <Touchable ink={pink} surface={white}>
-          Hello world
+          w Hello world
         </Touchable>
         <Touchable ink={pink} surface={white}>
           <div
