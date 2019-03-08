@@ -43,7 +43,7 @@ interface AdminForm {
 }
 
 const AdminElection: React.FC<PageProps> = props => {
-  const [formState, { text }] = useFormState<AdminForm>();
+  const [formState, { text, email }] = useFormState<AdminForm>();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   const formElements = [
@@ -99,8 +99,7 @@ const AdminElection: React.FC<PageProps> = props => {
       <SingleLineTextInput
         id="name"
         required
-        type="email"
-        {...text("email")}
+        {...email("email")}
         validationMessage={
           formState.touched.email && !formState.validity.email
             ? "valid email address required"

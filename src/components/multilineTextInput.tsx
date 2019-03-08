@@ -21,8 +21,6 @@ const ValidationError = styled(Caption)`
 
 const VERTICAL_PADDING = 8;
 
-const textInputStyles = css``;
-
 const TextArea = Text.withComponent(styled.textarea`
   position: relative;
   padding: ${VERTICAL_PADDING}px 8px ${VERTICAL_PADDING - 1}px;
@@ -48,7 +46,7 @@ const TextArea = Text.withComponent(styled.textarea`
     opacity: 1;
   }
 
-  &:not(:valid) {
+  &:invalid {
     border-color: ${pink.css()};
   }
 `);
