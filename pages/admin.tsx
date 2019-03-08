@@ -63,11 +63,8 @@ const AdminElection: React.FC<PageProps> = props => {
         required
         maxLength={100}
         {...text("name")}
-        validationMessage={
-          formState.touched.name && !formState.validity.name
-            ? "election name is required"
-            : ""
-        }
+        className={formState.touched.name ? "touched" : ""}
+        validationMessage={"election name is required"}
       />
     </FormRow>,
     <FormRow>
@@ -100,11 +97,8 @@ const AdminElection: React.FC<PageProps> = props => {
         id="name"
         required
         {...email("email")}
-        validationMessage={
-          formState.touched.email && !formState.validity.email
-            ? "valid email address required"
-            : ""
-        }
+        className={formState.touched.name ? "touched" : ""}
+        validationMessage={"valid email address required"}
       />
     </FormRow>,
     <FormRow>
