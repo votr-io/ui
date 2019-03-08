@@ -6,12 +6,16 @@ import { divider, pink, purple, text_light, white, disabled } from "./styles";
 import { Caption, Text } from "./typography";
 
 const CharacterCounter = styled(Caption)`
+  position: absolute;
+  bottom: 0;
+  right: 8px;
   transition: color 0.2s ease-out, opacity 0.2s ease-out;
   color: ${text_light.css()};
   opacity: 0;
 `;
 
 const ValidationError = styled(Caption)`
+  padding-left: 8px;
   transition: opacity 0.2s ease-out;
   color: ${pink.css()};
   opacity: 0;
@@ -43,8 +47,11 @@ const TextArea = Text.withComponent(styled.textarea`
     font-weight: normal;
   }
 `);
+const Input = TextArea.withComponent(styled.input());
 
+// TODO: better way to re-use these styles? ^
 const InputWrapper = styled(Flex)`
+  position: relative;
   flex-direction: column;
   margin-bottom: 4px;
 
@@ -55,9 +62,21 @@ const InputWrapper = styled(Flex)`
   &.touched ${TextArea}:invalid {
     border-color: ${pink.css()};
   }
-
   &.touched ${TextArea}:invalid ~ ${ValidationError} {
     opacity: 1;
+  }
+  &.touched ${TextArea}:invalid ~ ${CharacterCounter} {
+    color: ${pink.css()};
+  }
+
+  &.touched ${Input}:invalid {
+    border-color: ${pink.css()};
+  }
+  &.touched ${Input}:invalid ~ ${ValidationError} {
+    opacity: 1;
+  }
+  &.touched ${Input}:invalid ~ ${CharacterCounter} {
+    color: ${pink.css()};
   }
 `;
 
@@ -80,22 +99,17 @@ const TextInput: React.FC<MultilineTextInputProps> = React.memo(
     maxLength = maxLength || 0;
     const length = isString(value) && value.length;
 
+    console.log(className, validationMessage);
+
     return (
       <InputWrapper {...{ className, style }}>
         {children}
-        {/* <Flex
-          pl="8px"
-          flexDirection="row"
-          justifyContent="space-between"
-          style={{ height: 20 }}
-        > */}
-        <ValidationError>{validationMessage}</ValidationError>
+        <ValidationError>{validationMessage}&nbsp;</ValidationError>
         {maxLength > 0 ? (
           <CharacterCounter>
             {length}/{maxLength}
           </CharacterCounter>
         ) : null}
-        {/* </Flex> */}
       </InputWrapper>
     );
   }
@@ -119,8 +133,6 @@ export const MultilineTextInput: React.FC<MultilineTextInputProps> = React.memo(
   }
 );
 
-const Input = TextArea.withComponent(styled.input<{ invalid: boolean }>``);
-
 type SingleLineTextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   validationMessage?: string;
 };
@@ -137,10 +149,7 @@ export const SingleLineTextInput: React.FC<
 
   return (
     <TextInput {...{ style, className, validationMessage, value, maxLength }}>
-      <Input
-        {...otherProps}
-        invalid={validationMessage != null && validationMessage.length > 0}
-      />
+      <Input {...otherProps} />
     </TextInput>
   );
 });

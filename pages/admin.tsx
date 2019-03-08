@@ -97,7 +97,7 @@ const AdminElection: React.FC<PageProps> = props => {
         id="name"
         required
         {...email("email")}
-        className={formState.touched.name ? "touched" : ""}
+        className={formState.touched.email ? "touched" : ""}
         validationMessage={"valid email address required"}
       />
     </FormRow>,
