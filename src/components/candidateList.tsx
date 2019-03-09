@@ -9,14 +9,15 @@ import React, {
 import { Flex } from "@rebass/grid/emotion";
 import { CandidateCard, CARD_MARGIN } from "./candidateCard";
 import { Candidate } from "./types";
-import { useTransition, animated } from "react-spring";
+import { useTransition, animated, useSpring } from "react-spring";
 import styled from "@emotion/styled";
 import { FaMinusCircle } from "react-icons/fa";
-import { IconButton } from "./controls";
+import { v4 } from "uuid";
+import { IconButton, AnimatedFlex } from "./controls";
 
 interface Props {
   value: Candidate[];
-  onChange: (value: Candidate[]) => void;
+  onChange: (value: Candidate[], editModelId: string) => void;
 }
 
 /**
@@ -26,9 +27,6 @@ interface Props {
  * 4) Once we have typed anything in the editmodel, it is pushed into the collection, new editmodel appears
  * 5) If we delete all text from an entry, it is removed from the collection on blur
  */
-
-let id = 0;
-const nextId = () => `${++id}`;
 
 interface CardPosition {
   y: number;
@@ -44,16 +42,16 @@ function getNextY(positions: CardPosition[]): number {
   return prevPosition.y + prevPosition.height;
 }
 
-const CardRow = styled(animated.div)`
+const CardRow = styled(animated.label)`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  border-radius: 4px;
   width: 100%;
-  padding: ${CARD_MARGIN}px;
+  padding: ${CARD_MARGIN}px 16px;
   box-sizing: border-box;
-  transition: background-color 0.3s ease-out;
+  transition: background-color 0.2s ease-out;
+  transform-origin: 50% 0;
 
   &:hover {
     background: rgba(0, 0, 0, 0.05);
@@ -64,18 +62,21 @@ export const CandidateListInput: React.FC<Props> = props => {
   const { value, onChange } = props;
 
   const [editModel, setEditModel] = useState<Candidate>({
-    id: `${id}`,
+    id: `${v4()}`,
     name: "",
     description: ""
   });
 
+  useEffect(() => {
+    onChange(value, editModel.id);
+  }, []);
+
   const [positions, setPositions] = useState<CardPosition[]>([]);
   const [editModelHasFocus, setEditModelHasFocus] = useState(false);
-  console.log();
 
   const cards = useMemo(() => value.concat(editModel), [editModel, value]);
   const cardRefs = useMemo(
-    () => cards.map(() => React.createRef<HTMLDivElement>()),
+    () => cards.map(() => React.createRef<HTMLLabelElement>()),
     [cards.length]
   );
 
@@ -92,16 +93,17 @@ export const CandidateListInput: React.FC<Props> = props => {
     );
   }, [cards]);
 
-  const transitions = useTransition(
+  const transitions = useTransition<
+    CardPosition & { candidate: Candidate },
+    { y: number; visibility: number; rowTransform: string }
+  >(
     cards.map((candidate, i) => {
       let position = positions[i];
       if (i >= positions.length) {
         position = { y: getNextY(positions), height: 0 };
       }
-      const isGhost = candidate.id === editModel.id && !editModelHasFocus;
       return {
         candidate,
-        isGhost,
         ...position
       };
     }),
@@ -109,24 +111,41 @@ export const CandidateListInput: React.FC<Props> = props => {
     {
       unique: true,
       trail: 15,
+      y: 0,
+      visibility: 0,
+      rowTransform: "",
       from: ({ y }) => ({
-        transform: `translateY(${y}px) scale(0)`,
-        opacity: 0
+        y,
+        visibility: 0,
+        rowTransform: `translateY(${y}px) scaleY(0)`
       }),
-      enter: ({ y, isGhost }) => ({
-        transform: `translateY(${y}px) scale(1)`,
-        opacity: isGhost ? 0.5 : 1
+      enter: ({ y }) => ({
+        y,
+        visibility: 1,
+        rowTransform: `translateY(${y}px) scaleY(1)`
       }),
       leave: ({ y }) => ({
-        transform: `translateY(${y}px) scale(0)`,
-        opacity: 0
+        y,
+        visibility: 0,
+        rowTransform: `translateY(${y}px) scaleY(0)`
       }),
-      update: ({ y, isGhost }) => ({
-        transform: `translateY(${y}px) scale(1)`,
-        opacity: isGhost ? 0.5 : 1
+      update: ({ y }) => ({
+        y,
+        visibility: 1,
+        rowTransform: `translateY(${y}px) scaleY(1)`
       })
     }
   );
+
+  let contentHeight = 0;
+  if (positions.length > 0) {
+    const lastPosition = positions[positions.length - 1];
+    contentHeight = lastPosition.height + lastPosition.y;
+  }
+  const heightSpring = useSpring({
+    from: { height: 0 },
+    height: contentHeight
+  });
 
   const onEnter = (candidate: Candidate) => {
     const i = cards.findIndex(card => card.id === candidate.id);
@@ -146,7 +165,7 @@ export const CandidateListInput: React.FC<Props> = props => {
       candidate => candidate.name !== "" || candidate.description != ""
     );
     if (nextValue.length != value.length) {
-      onChange(nextValue);
+      onChange(nextValue, editModel.id);
     }
   }, [value, onChange]);
 
@@ -156,7 +175,10 @@ export const CandidateListInput: React.FC<Props> = props => {
       if (i < 0) {
         return;
       }
-      onChange([...value.slice(0, i), candidate, ...value.slice(i + 1)]);
+      onChange(
+        [...value.slice(0, i), candidate, ...value.slice(i + 1)],
+        editModel.id
+      );
     },
     [onChange, value]
   );
@@ -167,20 +189,21 @@ export const CandidateListInput: React.FC<Props> = props => {
       if (i < 0) {
         return;
       }
-      onChange([...value.slice(0, i), ...value.slice(i + 1)]);
+      onChange([...value.slice(0, i), ...value.slice(i + 1)], editModel.id);
     },
     [onChange, value]
   );
 
   const appendEditModel = useCallback(
     (candidate: Candidate) => {
-      onChange(value.concat(candidate));
+      const id = v4();
       setEditModel({
-        id: nextId(),
+        id,
         name: "",
         description: ""
       });
       setEditModelHasFocus(false);
+      onChange(value.concat(candidate), id);
     },
     [onChange, value]
   );
@@ -194,7 +217,11 @@ export const CandidateListInput: React.FC<Props> = props => {
   }, []);
 
   return (
-    <Flex flex="1" flexDirection="column" style={{ position: "relative" }}>
+    <AnimatedFlex
+      flex="1"
+      flexDirection="column"
+      style={{ position: "relative", ...heightSpring }}
+    >
       {transitions.map(({ item, props }, i) => {
         const { candidate } = item;
         const isEditModel = candidate.id === editModel.id;
@@ -202,11 +229,14 @@ export const CandidateListInput: React.FC<Props> = props => {
           <CardRow
             key={candidate.id}
             ref={cardRefs[i]}
+            htmlFor={`card-${candidate.id}-name`}
             style={{
               position: "absolute",
-              transformOrigin: "50% 0%",
               zIndex: transitions.length - i,
-              ...props
+              opacity: props.visibility.interpolate(v =>
+                isEditModel && !editModelHasFocus ? v * 0.5 : v
+              ),
+              transform: props.rowTransform
             }}
           >
             <CandidateCard
@@ -218,15 +248,27 @@ export const CandidateListInput: React.FC<Props> = props => {
               onFocus={isEditModel ? onEditModelFocus : undefined}
               onBlur={isEditModel ? onEditModelBlur : onCardBlur}
               onEnter={onEnter}
+              style={
+                {
+                  // transformOrigin: "50% 0",
+                  // transform: props.visibility.interpolate(v => `scale(${v})`)
+                }
+              }
             />
             {isEditModel ? null : (
-              <IconButton onClick={() => removeCandidate(candidate)}>
+              <IconButton
+                onClick={() => removeCandidate(candidate)}
+                style={{
+                  transformOrigin: "50% 0",
+                  transform: props.visibility.interpolate(v => `scale(${v})`)
+                }}
+              >
                 <FaMinusCircle />
               </IconButton>
             )}
           </CardRow>
         );
       })}
-    </Flex>
+    </AnimatedFlex>
   );
 };

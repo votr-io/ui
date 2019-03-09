@@ -14,7 +14,13 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   border-left: 4px solid #6e6e6e;
   background: ${card.css()};
   padding: 4px 16px;
+  transition: all 0.2s ease-out;
   ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
+
+  &:focus-within {
+    transform: scale(1.05);
+    ${makeShadow(4)}
+  }
 `;
 
 const TEXTAREA_PADDING = 4;
@@ -30,7 +36,7 @@ const Editable = styled.textarea<{ disabled?: boolean }>`
   resize: none;
 
   &:focus {
-    border-color: ${pink.css()};
+    border-color: ${text_light.css()};
   }
 
   &::placeholder {
@@ -61,6 +67,7 @@ const resize = ($el: HTMLElement | null) => {
 
 const removeNewlines = (str: string) => str.replace(/(\r\n|\n|\r)/gm, "");
 
+export const cardInputId = (id: string) => `card-${id}-name`;
 export const CandidateCard: React.FC<
   Props & PropTypes<typeof Card>
 > = React.memo(
@@ -170,7 +177,7 @@ export const CandidateCard: React.FC<
           ) : (
             <Flex flex="1" flexDirection="column" justifyContent="space-around">
               <BoldEditable
-                id={otherProps.id == null ? undefined : `${otherProps.id}-name`}
+                id={cardInputId(candidate.id)}
                 ref={$name}
                 placeholder="name"
                 rows={1}

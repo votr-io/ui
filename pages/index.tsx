@@ -26,7 +26,7 @@ const Panel = styled(animated.div)`
   background: ${background.css()};
 `;
 
-const Purple = styled(Flex)`
+const Gradient = styled(Flex)`
   flex: 1;
   background-image: linear-gradient(
     ${gradient_dark.css()},
@@ -92,7 +92,7 @@ const HomePage: React.SFC<PageProps> = props => {
         </AnimatedFlex>
       </Panel>
       <Panel>
-        <Purple>votr</Purple>
+        <Gradient>votr</Gradient>
       </Panel>
     </Page>
   );

@@ -1,9 +1,15 @@
 import { Flex } from "@rebass/grid/emotion";
 import React, { useState } from "react";
 import { FaPlusCircle } from "react-icons/fa";
-import { useFormState } from "react-use-form-state";
+import { useFormState, BaseInputProps } from "react-use-form-state";
 import { CandidateListInput } from "../src/components/candidateList";
-import { AnimatedFlex, FormHeader, FormRow } from "../src/components/controls";
+import {
+  AnimatedFlex,
+  FormHeader,
+  FormRow,
+  Button,
+  IconButton
+} from "../src/components/controls";
 import {
   MultilineTextInput,
   SingleLineTextInput
@@ -12,18 +18,20 @@ import { Content, Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
+import { cardInputId } from "../src/components/candidateCard";
 
 /**
  * TODO:
  * Take email address
  *
  * Candidate List:
- * - Plus button
- * - Minus buttons
- * - Scroll to card when it recevies focus
+ * - [X] Plus button
+ * - [X] Minus buttons
+ * - [X] Scroll to card when it recevies focus
  *
  * Form validation:
- * - Input trimming
+ * - [X] Input trimming
+ * - [X] Prevent newlines
  * - Character count on candidate cards
  *
  * Card Validation:
@@ -42,9 +50,29 @@ interface AdminForm {
   email: string;
 }
 
+const trimWhitespace = (str: string) => {
+  return str.replace(/[\r\n]/g, "").trimLeft();
+};
+
+const withTrimWhiteSpace = (b: BaseInputProps) => {
+  return {
+    ...b,
+    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      e.target.value = trimWhitespace(e.target.value);
+      b.onChange(e);
+    }
+  };
+};
+
 const AdminElection: React.FC<PageProps> = props => {
   const [formState, { text, email }] = useFormState<AdminForm>();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [editModelId, setEditModelId] = useState("0");
+
+  const onChange = (candidates: Candidate[], editModelId: string) => {
+    setCandidates(candidates);
+    setEditModelId(editModelId);
+  };
 
   const formElements = [
     <FormHeader>
@@ -62,7 +90,7 @@ const AdminElection: React.FC<PageProps> = props => {
         id="name"
         required
         maxLength={100}
-        {...text("name")}
+        {...withTrimWhiteSpace(text("name"))}
         className={formState.touched.name ? "touched" : ""}
         validationMessage={"election name is required"}
       />
@@ -80,7 +108,7 @@ const AdminElection: React.FC<PageProps> = props => {
       <MultilineTextInput
         id="description"
         maxLength={100}
-        {...text("description")}
+        {...withTrimWhiteSpace(text("description"))}
       />
     </FormRow>,
     <FormRow>
@@ -94,33 +122,30 @@ const AdminElection: React.FC<PageProps> = props => {
         </p>
       </label>
       <SingleLineTextInput
-        id="name"
+        id="email"
         required
         {...email("email")}
         className={formState.touched.email ? "touched" : ""}
         validationMessage={"valid email address required"}
       />
     </FormRow>,
-    <FormRow>
-      <Flex flexDirection="row" alignItems="center">
-        <Flex flex="1">
-          <label htmlFor="description">
-            <Bold>Candidates</Bold>
-            <p>
-              <Caption>
-                List the candidates competing in this election. Order does not
-                matter.
-              </Caption>
-            </p>
-          </label>
-        </Flex>
-        <Flex>
-          <FaPlusCircle />
-        </Flex>
+    <Flex flexDirection="column" flex="1">
+      <Flex p="2px 16px">
+        <label htmlFor={cardInputId(editModelId)}>
+          <Bold>Candidates</Bold>
+          <p>
+            <Caption>
+              List the candidates competing in this election. Order does not
+              matter.
+            </Caption>
+          </p>
+        </label>
       </Flex>
-
-      <CandidateListInput value={candidates} onChange={setCandidates} />
-    </FormRow>
+      <CandidateListInput value={candidates} onChange={onChange} />
+    </Flex>,
+    <Flex flex="1" flexDirection="row" justifyContent="flex-end" p="16px">
+      <Button>Save</Button>
+    </Flex>
   ];
 
   const trail = usePageTransition(
@@ -140,7 +165,7 @@ const AdminElection: React.FC<PageProps> = props => {
   return (
     <Page>
       <Flex flex="1" flexDirection="column" alignItems="center">
-        <Content flex="1 0 auto" flexDirection="column" p="8px">
+        <Content flex="1 0 auto" flexDirection="column">
           {formElements.map((El, i) => {
             return (
               <AnimatedFlex key={i} style={animate(i)}>

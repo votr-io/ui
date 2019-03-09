@@ -4,20 +4,21 @@ import { animated } from "react-spring";
 import {
   divider,
   opacity,
-  purple,
+  pink,
   text_dark,
   text_light,
-  white
+  white,
+  disabled
 } from "./styles";
 import { Bold } from "./typography";
 
 export const Button = styled.button`
-  color: ${purple.css()};
+  color: ${pink.css()};
   font-size: 16px;
   font-weight: bold;
   padding: 8px 16px;
   min-width: 64px;
-  border: 2px solid ${purple.css()};
+  border: 2px solid ${pink.css()};
   border-radius: 2px;
   background: none;
   outline: none;
@@ -30,20 +31,20 @@ export const Button = styled.button`
 
   &:not([disabled]) {
     &:hover {
-      background: ${purple.alpha(opacity(purple, "hover")).css()};
+      background: ${pink.alpha(opacity(pink, "hover")).css()};
     }
 
     &:focus {
-      background: ${purple.alpha(opacity(purple, "focus")).css()};
+      background: ${pink.alpha(opacity(pink, "focus")).css()};
     }
 
     &:active {
-      background: ${purple.alpha(opacity(purple, "pressed")).css()};
+      background: ${pink.alpha(opacity(pink, "pressed")).css()};
     }
   }
 `;
 
-export const IconButton = styled.button`
+export const IconButton = animated(styled.button`
   outline: none;
   border: none;
   height: 48px;
@@ -52,7 +53,7 @@ export const IconButton = styled.button`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  color: ${text_light.css()};
+  color: ${divider.css()};
   background: none;
   font-size: 24px;
   transition: color 0.3s ease-out;
@@ -64,36 +65,33 @@ export const IconButton = styled.button`
 
   &:not([disabled]) {
     &:hover {
-      color: ${text_dark.css()};
+      color: ${text_light.css()};
     }
 
     &:focus {
-      color: ${purple.css()};
-    }
-
-    &:active {
-      color: ${purple.css()};
+      color: ${text_light.css()};
+      transform: scale(1.05);
     }
   }
-`;
+`);
 
 export const Link = styled.a`
   font-family: Arial;
   text-decoration: none;
-  color: ${purple.css()};
+  color: ${pink.css()};
   font-size: 14px;
   cursor: pointer;
 
   &:hover {
-    color: ${purple.alpha(1 - opacity(purple, "hover")).css()};
+    color: ${pink.alpha(1 - opacity(pink, "hover")).css()};
   }
 
   &:focus {
-    color: ${purple.alpha(1 - opacity(purple, "focus")).css()};
+    color: ${pink.alpha(1 - opacity(pink, "focus")).css()};
   }
 
   &:active {
-    color: ${purple.alpha(1 - opacity(purple, "pressed")).css()};
+    color: ${pink.alpha(1 - opacity(pink, "pressed")).css()};
   }
 `;
 
@@ -134,7 +132,7 @@ export const Input = styled.input`
   }
 
   &:focus {
-    border-color: ${purple.css()};
+    border-color: ${pink.css()};
   }
 
   &::placeholder {

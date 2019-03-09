@@ -99,8 +99,6 @@ const TextInput: React.FC<MultilineTextInputProps> = React.memo(
     maxLength = maxLength || 0;
     const length = isString(value) && value.length;
 
-    console.log(className, validationMessage);
-
     return (
       <InputWrapper {...{ className, style }}>
         {children}
