@@ -14,10 +14,10 @@ export enum ElectionStatus {
   CLOSED = "CLOSED",
   OPEN = "OPEN",
   PENDING = "PENDING",
-  TALLYING = "TALLYING"
+  TALLYING = "TALLYING",
 }
 
-export interface stCreateCandidateInput {
+export interface CreateCandidateInput {
   name: string;
   description?: string | null;
 }

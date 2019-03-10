@@ -1,29 +1,25 @@
 import { Flex } from "@rebass/grid/emotion";
-import React, { useState } from "react";
-import { FaPlusCircle } from "react-icons/fa";
-import { useFormState, BaseInputProps } from "react-use-form-state";
+import React, { useState, useCallback } from "react";
+import { BaseInputProps, useFormState } from "react-use-form-state";
+import { cardInputId } from "../src/components/candidateCard";
 import { CandidateListInput } from "../src/components/candidateList";
 import {
   AnimatedFlex,
-  FormHeader,
-  FormRow,
   Button,
-  IconButton
+  FormHeader,
+  FormRow
 } from "../src/components/controls";
 import {
   MultilineTextInput,
   SingleLineTextInput
-} from "../src/components/multilineTextInput";
+} from "../src/components/textInput";
 import { Content, Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
-import { cardInputId } from "../src/components/candidateCard";
+import { useCreateElection } from "../src/generated/apolloHooks";
 
 /**
- * TODO:
- * Take email address
- *
  * Candidate List:
  * - [X] Plus button
  * - [X] Minus buttons
@@ -32,16 +28,19 @@ import { cardInputId } from "../src/components/candidateCard";
  * Form validation:
  * - [X] Input trimming
  * - [X] Prevent newlines
- * - Character count on candidate cards
  *
  * Card Validation:
- * - Name required
+ * - Useformstate
+ * - Update state on blur
  * - No empty names
  * - No duplicated names
+ * - Character limit
+ * - Dont animate initial render
  *
  * Save Button
  * - Login flow
- * - Animate editing to side, show start election button
+ * - Form validation, focus first invalid input
+ * - Figure out next state (election created, sharable link, start / stop)
  */
 
 interface AdminForm {
@@ -67,12 +66,30 @@ const withTrimWhiteSpace = (b: BaseInputProps) => {
 const AdminElection: React.FC<PageProps> = props => {
   const [formState, { text, email }] = useFormState<AdminForm>();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [editModelId, setEditModelId] = useState("0");
+  const [editModelId, setEditModelId] = useState("");
 
-  const onChange = (candidates: Candidate[], editModelId: string) => {
-    setCandidates(candidates);
-    setEditModelId(editModelId);
-  };
+  const onChange = useCallback(
+    (candidates: Candidate[], editModelId: string) => {
+      setCandidates(candidates);
+      setEditModelId(editModelId);
+    },
+    []
+  );
+
+  const onSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (candidates.length < 2) {
+        const editModel = document.getElementById(cardInputId(editModelId));
+        if (editModel == null) {
+          return;
+        }
+        editModel.focus();
+        return;
+      }
+    },
+    [candidates, editModelId]
+  );
 
   const formElements = [
     <FormHeader>
@@ -166,13 +183,22 @@ const AdminElection: React.FC<PageProps> = props => {
     <Page>
       <Flex flex="1" flexDirection="column" alignItems="center">
         <Content flex="1 0 auto" flexDirection="column">
-          {formElements.map((El, i) => {
-            return (
-              <AnimatedFlex key={i} style={animate(i)}>
-                {El}
-              </AnimatedFlex>
-            );
-          })}
+          <form
+            onSubmit={onSubmit}
+            style={{ display: "flex", flex: "1", flexDirection: "column" }}
+          >
+            {formElements.map((row, i) => {
+              return (
+                <AnimatedFlex
+                  key={i}
+                  style={animate(i)}
+                  flex={i === 4 ? "1 0 auto" : "0 0 auto"}
+                >
+                  {row}
+                </AnimatedFlex>
+              );
+            })}
+          </form>
         </Content>
       </Flex>
     </Page>

@@ -30,7 +30,7 @@ export interface GetElection_getElections {
 }
 
 export interface GetElection {
-  getElections: GetElection_getElections | null;
+  getElections: GetElection_getElections;
 }
 
 export interface GetElectionVariables {

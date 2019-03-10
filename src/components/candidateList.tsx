@@ -1,19 +1,17 @@
+import styled from "@emotion/styled";
 import React, {
   useCallback,
-  useState,
-  ChangeEvent,
-  useMemo,
   useEffect,
+  useMemo,
+  useState,
   useRef
 } from "react";
-import { Flex } from "@rebass/grid/emotion";
-import { CandidateCard, CARD_MARGIN } from "./candidateCard";
-import { Candidate } from "./types";
-import { useTransition, animated, useSpring } from "react-spring";
-import styled from "@emotion/styled";
 import { FaMinusCircle } from "react-icons/fa";
+import { animated, useSpring, useTransition } from "react-spring";
 import { v4 } from "uuid";
-import { IconButton, AnimatedFlex } from "./controls";
+import { CandidateCard, CARD_MARGIN, cardInputId } from "./candidateCard";
+import { AnimatedFlex, IconButton } from "./controls";
+import { Candidate } from "./types";
 
 interface Props {
   value: Candidate[];
@@ -61,6 +59,7 @@ const CardRow = styled(animated.label)`
 export const CandidateListInput: React.FC<Props> = props => {
   const { value, onChange } = props;
 
+  const isInitialRender = useRef(true);
   const [editModel, setEditModel] = useState<Candidate>({
     id: `${v4()}`,
     name: "",
@@ -69,6 +68,7 @@ export const CandidateListInput: React.FC<Props> = props => {
 
   useEffect(() => {
     onChange(value, editModel.id);
+    isInitialRender.current = false;
   }, []);
 
   const [positions, setPositions] = useState<CardPosition[]>([]);
@@ -116,8 +116,10 @@ export const CandidateListInput: React.FC<Props> = props => {
       rowTransform: "",
       from: ({ y }) => ({
         y,
-        visibility: 0,
-        rowTransform: `translateY(${y}px) scaleY(0)`
+        visibility: isInitialRender.current ? 1 : 0,
+        rowTransform: `translateY(${y}px) scaleY(${
+          isInitialRender.current ? 1 : 0
+        })`
       }),
       enter: ({ y }) => ({
         y,
@@ -149,11 +151,11 @@ export const CandidateListInput: React.FC<Props> = props => {
 
   const onEnter = (candidate: Candidate) => {
     const i = cards.findIndex(card => card.id === candidate.id);
-    const nextCard = cardRefs[i + 1];
-    if (nextCard == null || nextCard.current == null) {
+    const nextCard = cards[i + 1];
+    if (nextCard == null) {
       return;
     }
-    const nameInput = nextCard.current.querySelector("textarea");
+    const nameInput = document.getElementById(cardInputId(nextCard.id));
     if (nameInput == null) {
       return;
     }
@@ -229,7 +231,7 @@ export const CandidateListInput: React.FC<Props> = props => {
           <CardRow
             key={candidate.id}
             ref={cardRefs[i]}
-            htmlFor={`card-${candidate.id}-name`}
+            htmlFor={cardInputId(candidate.id)}
             style={{
               position: "absolute",
               zIndex: transitions.length - i,
@@ -240,6 +242,7 @@ export const CandidateListInput: React.FC<Props> = props => {
             }}
           >
             <CandidateCard
+              flex="1"
               candidate={candidate}
               onCandidateChange={
                 isEditModel ? appendEditModel : updateCandidate
@@ -247,13 +250,8 @@ export const CandidateListInput: React.FC<Props> = props => {
               editable
               onFocus={isEditModel ? onEditModelFocus : undefined}
               onBlur={isEditModel ? onEditModelBlur : onCardBlur}
+              required={!isEditModel || i < 2}
               onEnter={onEnter}
-              style={
-                {
-                  // transformOrigin: "50% 0",
-                  // transform: props.visibility.interpolate(v => `scale(${v})`)
-                }
-              }
             />
             {isEditModel ? null : (
               <IconButton

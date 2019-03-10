@@ -1,12 +1,11 @@
 import { Flex } from "@rebass/grid/emotion";
 import React, { useState } from "react";
-import { CandidateCard } from "../src/components/candidateCard";
-import { MultilineTextInput } from "../src/components/multilineTextInput";
-import { foreground, pink, white, background } from "../src/components/styles";
-import { Touchable } from "../src/components/touchable";
-4;
-import { Candidate } from "../src/components/types";
 import { Content } from "../src/components/page";
+import { pink, white } from "../src/components/styles";
+import { MultilineTextInput } from "../src/components/textInput";
+import { Touchable } from "../src/components/touchable";
+import { Candidate } from "../src/components/types";
+4;
 
 // 50 / 80
 

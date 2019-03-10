@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { AnimatedFlex } from "./controls";
-import { card, divider, makeShadow, pink, text_light } from "./styles";
+import { card, divider, makeShadow, text_light, pink } from "./styles";
 import { Candidate, PropTypes } from "./types";
 import { Bold, Text } from "./typography";
 
@@ -18,7 +18,7 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
 
   &:focus-within {
-    transform: scale(1.05);
+    transform: scale(1.02);
     ${makeShadow(4)}
   }
 `;
@@ -39,6 +39,10 @@ const Editable = styled.textarea<{ disabled?: boolean }>`
     border-color: ${text_light.css()};
   }
 
+  &:invalid {
+    border-color: ${pink.css()};
+  }
+
   &::placeholder {
     font-style: italic;
     color: ${text_light.css()};
@@ -55,6 +59,7 @@ interface Props {
   onCandidateChange?: (c: Candidate) => void;
   onEnter?: (c: Candidate) => void;
   borderColor?: string;
+  required?: boolean;
 }
 
 const resize = ($el: HTMLElement | null) => {
@@ -65,7 +70,8 @@ const resize = ($el: HTMLElement | null) => {
   $el.style.height = `${$el.scrollHeight - TEXTAREA_PADDING * 2}px`;
 };
 
-const removeNewlines = (str: string) => str.replace(/(\r\n|\n|\r)/gm, "");
+const removeNewlines = (str: string) =>
+  str.replace(/(\r\n|\n|\r)/gm, "").trimLeft();
 
 export const cardInputId = (id: string) => `card-${id}-name`;
 export const CandidateCard: React.FC<
@@ -83,6 +89,7 @@ export const CandidateCard: React.FC<
         onEnter,
         onFocus,
         onBlur,
+        required,
         ...otherProps
       },
       ref
@@ -172,34 +179,30 @@ export const CandidateCard: React.FC<
           onBlur={onCardBlur}
           ref={ref}
         >
-          {candidate == null || children ? (
-            children
-          ) : (
-            <Flex flex="1" flexDirection="column" justifyContent="space-around">
-              <BoldEditable
-                id={cardInputId(candidate.id)}
-                ref={$name}
-                placeholder="name"
-                rows={1}
-                value={candidate.name}
-                onChange={onNameChange}
-                onKeyPress={onKeyPress}
-                maxLength={50}
-                disabled={!editable}
-                required
-              />
-              <TextEditable
-                ref={$description}
-                placeholder="description (optional)"
-                rows={1}
-                value={candidate.description}
-                onChange={onDescriptionChange}
-                onKeyPress={onKeyPress}
-                maxLength={80}
-                disabled={!editable}
-              />
-            </Flex>
-          )}
+          <Flex flex="1" flexDirection="column" justifyContent="space-around">
+            <BoldEditable
+              id={cardInputId(candidate.id)}
+              ref={$name}
+              placeholder="name"
+              rows={1}
+              value={candidate.name}
+              onChange={onNameChange}
+              onKeyPress={onKeyPress}
+              maxLength={50}
+              disabled={!editable}
+              required={required}
+            />
+            <TextEditable
+              ref={$description}
+              placeholder="description (optional)"
+              rows={1}
+              value={candidate.description}
+              onChange={onDescriptionChange}
+              onKeyPress={onKeyPress}
+              maxLength={80}
+              disabled={!editable}
+            />
+          </Flex>
         </Card>
       );
     }

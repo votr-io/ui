@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import React, { useLayoutEffect, useRef } from "react";
 import { isString } from "util";
-import { divider, pink, purple, text_light, white, disabled } from "./styles";
+import { disabled, divider, pink, text_light, white } from "./styles";
 import { Caption, Text } from "./typography";
 
 const CharacterCounter = styled(Caption)`

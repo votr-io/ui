@@ -5,23 +5,23 @@
 import { CreateElectionRequest } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: createElection
+// GraphQL mutation operation: CreateElection
 // ====================================================
 
-export interface createElection_createElection_election {
+export interface CreateElection_createElection_election {
   __typename: "Election";
   id: string;
 }
 
-export interface createElection_createElection {
+export interface CreateElection_createElection {
   __typename: "CreateElectionResponse";
-  election: createElection_createElection_election;
+  election: CreateElection_createElection_election;
 }
 
-export interface createElection {
-  createElection: createElection_createElection;
+export interface CreateElection {
+  createElection: CreateElection_createElection;
 }
 
-export interface createElectionVariables {
+export interface CreateElectionVariables {
   input: CreateElectionRequest;
 }
