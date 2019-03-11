@@ -2,12 +2,13 @@ import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { animated, useTransition } from "react-spring";
+import { black, white } from "./styles";
 
 function isDark(color: chroma.Color): boolean {
   return color.luminance() < 0.5;
 }
 
-enum States {
+export enum States {
   enabled = "enabled",
   hover = "hover",
   focus = "focus",
@@ -27,16 +28,16 @@ const baseOverlayOpacity: Record<States, number> = {
   dragged: 0.08
 };
 
-function overlayColor(colors: TouchableProps, state: States) {
-  const { ink, surface } = colors;
+export function overlayColor(state: States, colors: TouchableProps = {}) {
+  const { ink = black, surface = white } = colors;
   const opacity = baseOverlayOpacity[state];
   const factor = isDark(surface) ? 2 : 1;
   return ink.alpha(opacity * factor);
 }
 
 export interface TouchableProps {
-  ink: chroma.Color;
-  surface: chroma.Color;
+  ink?: chroma.Color;
+  surface?: chroma.Color;
 }
 
 const Overlay = styled.div`
@@ -62,7 +63,7 @@ const TouchableWrapper = styled.div<TouchableProps>`
   cursor: pointer;
 
   &:hover ${Overlay} {
-    background: ${p => overlayColor(p, States.hover).css()};
+    background: ${p => overlayColor(States.hover, p).css()};
   }
 `;
 
@@ -141,7 +142,7 @@ export const Touchable: React.FC<TouchableProps> = React.memo(
           y,
           radius,
           id: nextId(),
-          color: overlayColor(props, States.pressed).css()
+          color: overlayColor(States.pressed, props).css()
         })
       );
     }, []);

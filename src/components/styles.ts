@@ -16,6 +16,7 @@ export const divider = chroma("black").alpha(0.25);
 export const background = chroma.hex("#eee");
 export const foreground = chroma.hex("#f7f7f7");
 export const white = chroma.hex("#fff");
+export const black = chroma.hex("#000");
 export const card = chroma.hex("#fff");
 
 export const makeShadow = (elevation: number) => {

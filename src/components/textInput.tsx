@@ -45,7 +45,7 @@ const TextArea = Text.withComponent(styled.textarea`
 
   &::placeholder {
     font-style: italic;
-    color: ${text_light.css()};
+    color: ${disabled.css()};
     font-weight: normal;
   }
 

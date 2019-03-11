@@ -12,6 +12,7 @@ import { v4 } from "uuid";
 import { CandidateCard, CARD_MARGIN, cardInputId } from "./candidateCard";
 import { AnimatedFlex, IconButton } from "./controls";
 import { Candidate } from "./types";
+import { overlayColor, States } from "./touchable";
 
 interface Props {
   value: Candidate[];
@@ -52,7 +53,11 @@ const CardRow = styled(animated.label)`
   transform-origin: 50% 0;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: ${overlayColor(States.hover).css()};
+  }
+
+  &:focus-within {
+    background: ${overlayColor(States.focus).css()};
   }
 `;
 
@@ -62,8 +67,8 @@ export const CandidateListInput: React.FC<Props> = props => {
   const isInitialRender = useRef(true);
   const [editModel, setEditModel] = useState<Candidate>({
     id: `${v4()}`,
-    name: "John F. Kennedy",
-    description: "The Democratic Party of these United States of America"
+    name: "",
+    description: ""
   });
 
   useEffect(() => {
@@ -185,16 +190,22 @@ export const CandidateListInput: React.FC<Props> = props => {
     [onChange, value]
   );
 
-  const removeCandidate = useCallback(
-    (candidate: Candidate) => {
-      const i = value.findIndex(c => c.id === candidate.id);
-      if (i < 0) {
-        return;
-      }
-      onChange([...value.slice(0, i), ...value.slice(i + 1)], editModel.id);
-    },
-    [onChange, value]
-  );
+  const removeCandidate = useMemo(() => {
+    return value.reduce(
+      (removeMap, candidate) => {
+        removeMap[candidate.id] = (e: React.MouseEvent) => {
+          e.preventDefault();
+          const i = value.findIndex(c => c.id === candidate.id);
+          if (i < 0) {
+            return;
+          }
+          onChange([...value.slice(0, i), ...value.slice(i + 1)], editModel.id);
+        };
+        return removeMap;
+      },
+      {} as Record<string, React.MouseEventHandler>
+    );
+  }, [value, onChange]);
 
   const appendEditModel = useCallback(
     (candidate: Candidate) => {
@@ -236,7 +247,7 @@ export const CandidateListInput: React.FC<Props> = props => {
               position: "absolute",
               zIndex: transitions.length - i,
               opacity: props.visibility.interpolate(v =>
-                isEditModel && !editModelHasFocus ? v * 0.5 : v
+                isEditModel && !editModelHasFocus ? v * 0.7 : v
               ),
               transform: props.rowTransform
             }}
@@ -253,10 +264,9 @@ export const CandidateListInput: React.FC<Props> = props => {
               required={!isEditModel || i < 2}
               onEnter={onEnter}
             />
-            <CandidateCard flex="1" candidate={candidate} />
             {isEditModel ? null : (
               <IconButton
-                onClick={() => removeCandidate(candidate)}
+                onClick={removeCandidate[candidate.id]}
                 style={{
                   transformOrigin: "50% 0",
                   transform: props.visibility.interpolate(v => `scale(${v})`)

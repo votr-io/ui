@@ -129,8 +129,8 @@ const AdminElection: React.FC<PageProps> = props => {
           <Bold>Candidates</Bold>
           <p>
             <Caption>
-              List the candidates competing in this election. Order does not
-              matter.
+              List the candidates competing in this election. At least 2
+              required, order does not matter.
             </Caption>
           </p>
         </label>
