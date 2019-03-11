@@ -3,16 +3,16 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState,
-  useRef
+  useRef,
+  useState
 } from "react";
 import { FaMinusCircle } from "react-icons/fa";
 import { animated, useSpring, useTransition } from "react-spring";
 import { v4 } from "uuid";
-import { CandidateCard, CARD_MARGIN, cardInputId } from "./candidateCard";
+import { CandidateCard, cardInputId, CARD_MARGIN } from "./candidateCard";
 import { AnimatedFlex, IconButton } from "./controls";
-import { Candidate } from "./types";
 import { overlayColor, States } from "./touchable";
+import { Candidate } from "./types";
 
 interface Props {
   value: Candidate[];

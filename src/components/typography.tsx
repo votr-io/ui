@@ -1,6 +1,6 @@
+import css from "@emotion/css";
 import styled from "@emotion/styled";
 import { text_dark, text_light } from "./styles";
-import css from "@emotion/css";
 
 export const BaseTextStyles = css`
   font-family: "Source Sans Pro", sans-serif;

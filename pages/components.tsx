@@ -2,7 +2,6 @@ import { Flex } from "@rebass/grid/emotion";
 import React, { useState } from "react";
 import { Content } from "../src/components/page";
 import { pink, white } from "../src/components/styles";
-import { MultilineTextInput } from "../src/components/textInput";
 import { Touchable } from "../src/components/touchable";
 import { Candidate } from "../src/components/types";
 4;
@@ -43,12 +42,6 @@ export default () => {
         style={{ width: 800, padding: 16 }}
         flexDirection="column"
       >
-        <MultilineTextInput
-          value={text}
-          onChange={setText}
-          maxLength={500}
-          validationMessage={text}
-        />
         <Touchable ink={pink} surface={white}>
           w Hello world
         </Touchable>

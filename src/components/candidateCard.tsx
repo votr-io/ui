@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
-import React, { useCallback, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { AnimatedFlex } from "./controls";
-import { card, divider, makeShadow, text_light, pink } from "./styles";
+import { card, makeShadow } from "./styles";
+import { TextInput } from "./textInput";
 import { Candidate, PropTypes } from "./types";
 import { Bold, Text } from "./typography";
-import { TextInput } from "./textInput";
 
 export const CARD_MARGIN = 8;
 const Card = styled(AnimatedFlex)<{ elevation?: number }>`

@@ -1,6 +1,6 @@
 import { Flex } from "@rebass/grid/emotion";
-import React, { useState, useCallback } from "react";
-import { BaseInputProps, useFormState } from "react-use-form-state";
+import React, { useCallback, useState } from "react";
+import { useFormState } from "react-use-form-state";
 import { cardInputId } from "../src/components/candidateCard";
 import { CandidateListInput } from "../src/components/candidateList";
 import {
@@ -9,12 +9,11 @@ import {
   FormHeader,
   FormRow
 } from "../src/components/controls";
-import { TextInput } from "../src/components/textInput";
 import { Content, Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
+import { TextInput } from "../src/components/textInput";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
-import { useCreateElection } from "../src/generated/apolloHooks";
 
 /**
  * Candidate List:
