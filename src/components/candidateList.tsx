@@ -61,7 +61,7 @@ const CardRow = styled(animated.label)`
   }
 `;
 
-export const CandidateListInput: React.FC<Props> = props => {
+export const CandidateListInput: React.FC<Props> = React.memo(props => {
   const { value, onChange } = props;
 
   const isInitialRender = useRef(true);
@@ -154,18 +154,21 @@ export const CandidateListInput: React.FC<Props> = props => {
     height: contentHeight
   });
 
-  const onEnter = (candidate: Candidate) => {
-    const i = cards.findIndex(card => card.id === candidate.id);
-    const nextCard = cards[i + 1];
-    if (nextCard == null) {
-      return;
-    }
-    const nameInput = document.getElementById(cardInputId(nextCard.id));
-    if (nameInput == null) {
-      return;
-    }
-    nameInput.focus();
-  };
+  const onEnter = useCallback(
+    (candidate: Candidate) => {
+      const i = cards.findIndex(card => card.id === candidate.id);
+      const nextCard = cards[i + 1];
+      if (nextCard == null) {
+        return;
+      }
+      const nameInput = document.getElementById(cardInputId(nextCard.id));
+      if (nameInput == null) {
+        return;
+      }
+      nameInput.focus();
+    },
+    [cards]
+  );
 
   const onCardBlur = useCallback(() => {
     const nextValue = value.filter(
@@ -280,4 +283,4 @@ export const CandidateListInput: React.FC<Props> = props => {
       })}
     </AnimatedFlex>
   );
-};
+});

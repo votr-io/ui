@@ -18,10 +18,11 @@ const CharacterCounter = styled(Caption)`
   opacity: 0;
 `;
 
+// TODO: move the border to the input wrapper, use flex to layout text & character counter instead
+// of magic numbers
 const TextArea = Text.withComponent(styled.textarea`
   position: relative;
   padding: 7px;
-  border: 0px;
   border: 1px solid ${divider.css()};
   outline: none;
   transition: border-color 0.2s ease-out;
@@ -95,7 +96,7 @@ const trimWhitespace = (str: string) => {
 
 export const TextInput: React.FC<TextInputProps> = React.memo(props => {
   const [touched, setTouched] = useState(false);
-  let { style, className, maxLength, value, type, inline } = props;
+  let { style, className, maxLength, value, type, inline, disabled } = props;
   maxLength = maxLength || 0;
   const length = isString(value) && value.length;
   const el = useRef<HTMLTextAreaElement>(null);
@@ -140,9 +141,11 @@ export const TextInput: React.FC<TextInputProps> = React.memo(props => {
 
   return (
     <InputWrapper
-      className={`${className} ${touched ? "touched" : ""} ${
+      className={[
+        className,
+        touched ? "touched" : "",
         inline ? "inline" : ""
-      }`}
+      ].join(" ")}
       style={style}
     >
       {

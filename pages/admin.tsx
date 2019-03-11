@@ -14,6 +14,9 @@ import { usePageTransition } from "../src/components/pageTransition";
 import { TextInput } from "../src/components/textInput";
 import { Candidate, PageProps } from "../src/components/types";
 import { Bold, Caption, Headline } from "../src/components/typography";
+import { useCreateElection } from "../src/generated/apolloHooks";
+import { CreateElection } from "../src/generated/createElection";
+import { FetchResult } from "apollo-link";
 
 /**
  * Candidate List:
@@ -49,6 +52,7 @@ const AdminElection: React.FC<PageProps> = props => {
   const [formState, { text, email }] = useFormState<AdminForm>();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [editModelId, setEditModelId] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const onChange = useCallback(
     (candidates: Candidate[], editModelId: string) => {
@@ -58,19 +62,41 @@ const AdminElection: React.FC<PageProps> = props => {
     []
   );
 
+  const createElection = useCreateElection();
+
+  // TODO: can I have a custom validation message if #candidate < 2?
+  // TODO: duplicate name detection
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (candidates.length < 2) {
-        const editModel = document.getElementById(cardInputId(editModelId));
-        if (editModel == null) {
-          return;
+
+      const { name, description } = formState.values;
+
+      setIsSaving(true);
+      createElection({
+        variables: {
+          input: {
+            name,
+            description,
+            candidates
+          }
         }
-        editModel.focus();
-        return;
-      }
+      })
+        .then(res => {
+          if (res.data == null) {
+            return;
+          }
+          const {
+            createElection: { election, adminToken }
+          } = res.data;
+          console.log(election, adminToken);
+          setIsSaving(false);
+        })
+        .catch(() => {
+          setIsSaving(false);
+        });
     },
-    [candidates, editModelId]
+    [candidates, formState, createElection]
   );
 
   const formElements = [

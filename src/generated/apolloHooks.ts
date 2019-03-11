@@ -31,6 +31,6 @@ export const useGetElection = (variables: GetElectionVariables, options: Generat
 }
 
 
-export const CreateElectionMutation = gql`mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename election{__typename id}}}`
+export const CreateElectionMutation = gql`mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename id}}}`
   
 export const GetElectionQuery = gql`query GetElection($id:ID!){getElections(input:{ids:[$id]}){__typename elections{__typename candidates{__typename description id name}description id name status}}}`

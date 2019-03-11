@@ -3,5 +3,6 @@ mutation CreateElection($input: CreateElectionRequest!) {
     election {
       id
     }
+    adminToken
   }
 }

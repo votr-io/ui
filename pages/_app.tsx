@@ -8,7 +8,7 @@ import App, {
   NextAppContext
 } from "next/app";
 import Head from "next/head";
-import React from "react";
+import React, { useMemo } from "react";
 import { ApolloProvider } from "react-apollo-hooks";
 import NoSSR from "react-no-ssr";
 import { background } from "../src/components/styles";
@@ -44,17 +44,21 @@ interface State {
 
 type Props = DefaultAppIProps & AppProps;
 
+const ClientProvider: React.FC = ({ children }) => {
+  const client = useMemo(
+    () =>
+      new Client({
+        uri: "https://votr-graphql.herokuapp.com/graphql"
+      }),
+    []
+  );
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+};
+
 export default class MyApp extends App<{}, State> {
   private nextComponent: NextComponentType<PageProps>;
   private nextPath: string;
-  //@ts-ignore
-  private client: Client<{}> = null;
-
-  componentDidMount() {
-    this.client = new Client({
-      uri: "https://votr-graphql.herokuapp.com"
-    });
-  }
 
   static async getInitialProps(context: NextAppContext) {
     const { Component, router, ctx } = context;
@@ -142,14 +146,14 @@ export default class MyApp extends App<{}, State> {
         <Container>
           <Global styles={globalStyles} />
           <NoSSR>
-            <ApolloProvider client={this.client}>
+            <ClientProvider>
               <Component
                 {...pageProps}
                 path={path}
                 transitionState={transitionState}
                 onTransitionComplete={this.onTransitionComplete}
               />
-            </ApolloProvider>
+            </ClientProvider>
           </NoSSR>
         </Container>
       </>

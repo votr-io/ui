@@ -16,6 +16,7 @@ export interface CreateElection_createElection_election {
 export interface CreateElection_createElection {
   __typename: "CreateElectionResponse";
   election: CreateElection_createElection_election;
+  adminToken: string | null;
 }
 
 export interface CreateElection {
