@@ -7,6 +7,7 @@ export const BaseTextStyles = css`
   font-size: 14px;
   line-height: 20px;
   color: ${text_dark.css()};
+  word-break: break-word;
 `;
 
 export const Text = styled.span`

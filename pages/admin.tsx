@@ -9,10 +9,7 @@ import {
   FormHeader,
   FormRow
 } from "../src/components/controls";
-import {
-  MultilineTextInput,
-  SingleLineTextInput
-} from "../src/components/textInput";
+import { TextInput } from "../src/components/textInput";
 import { Content, Page } from "../src/components/page";
 import { usePageTransition } from "../src/components/pageTransition";
 import { Candidate, PageProps } from "../src/components/types";
@@ -48,20 +45,6 @@ interface AdminForm {
   description: string;
   email: string;
 }
-
-const trimWhitespace = (str: string) => {
-  return str.replace(/[\r\n]/g, "").trimLeft();
-};
-
-const withTrimWhiteSpace = (b: BaseInputProps) => {
-  return {
-    ...b,
-    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      e.target.value = trimWhitespace(e.target.value);
-      b.onChange(e);
-    }
-  };
-};
 
 const AdminElection: React.FC<PageProps> = props => {
   const [formState, { text, email }] = useFormState<AdminForm>();
@@ -102,14 +85,13 @@ const AdminElection: React.FC<PageProps> = props => {
           <Caption>A brief title describing what this election is for.</Caption>
         </p>
       </label>
-      <MultilineTextInput
+      <TextInput
         autoFocus
         id="name"
         required
         maxLength={100}
-        {...withTrimWhiteSpace(text("name"))}
-        className={formState.touched.name ? "touched" : ""}
-        validationMessage={"election name is required"}
+        {...text("name")}
+        type="multi"
       />
     </FormRow>,
     <FormRow>
@@ -122,10 +104,11 @@ const AdminElection: React.FC<PageProps> = props => {
           <Caption>Additional information about the election.</Caption>
         </p>
       </label>
-      <MultilineTextInput
+      <TextInput
         id="description"
         maxLength={100}
-        {...withTrimWhiteSpace(text("description"))}
+        {...text("description")}
+        type="multi"
       />
     </FormRow>,
     <FormRow>
@@ -138,13 +121,7 @@ const AdminElection: React.FC<PageProps> = props => {
           </Caption>
         </p>
       </label>
-      <SingleLineTextInput
-        id="email"
-        required
-        {...email("email")}
-        className={formState.touched.email ? "touched" : ""}
-        validationMessage={"valid email address required"}
-      />
+      <TextInput id="email" required {...email("email")} />
     </FormRow>,
     <Flex flexDirection="column" flex="1">
       <Flex p="2px 16px">
@@ -175,7 +152,8 @@ const AdminElection: React.FC<PageProps> = props => {
     const t = trail[i];
     return {
       opacity: t.x,
-      transform: t.x.interpolate(x => `translateX(${(x - 1) * 10}px)`)
+      transform: t.x.interpolate(x => `translateX(${(x - 1) * 10}px)`),
+      zIndex: formElements.length - i
     };
   };
 

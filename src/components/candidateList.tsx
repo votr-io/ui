@@ -62,8 +62,8 @@ export const CandidateListInput: React.FC<Props> = props => {
   const isInitialRender = useRef(true);
   const [editModel, setEditModel] = useState<Candidate>({
     id: `${v4()}`,
-    name: "",
-    description: ""
+    name: "John F. Kennedy",
+    description: "The Democratic Party of these United States of America"
   });
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export const CandidateListInput: React.FC<Props> = props => {
     contentHeight = lastPosition.height + lastPosition.y;
   }
   const heightSpring = useSpring({
-    from: { height: 0 },
+    from: { height: 104 },
     height: contentHeight
   });
 
@@ -253,6 +253,7 @@ export const CandidateListInput: React.FC<Props> = props => {
               required={!isEditModel || i < 2}
               onEnter={onEnter}
             />
+            <CandidateCard flex="1" candidate={candidate} />
             {isEditModel ? null : (
               <IconButton
                 onClick={() => removeCandidate(candidate)}

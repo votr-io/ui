@@ -5,6 +5,7 @@ import { AnimatedFlex } from "./controls";
 import { card, divider, makeShadow, text_light, pink } from "./styles";
 import { Candidate, PropTypes } from "./types";
 import { Bold, Text } from "./typography";
+import { TextInput } from "./textInput";
 
 export const CARD_MARGIN = 8;
 const Card = styled(AnimatedFlex)<{ elevation?: number }>`
@@ -16,42 +17,10 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   padding: 4px 16px;
   transition: all 0.2s ease-out;
   ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
-
-  &:focus-within {
-    transform: scale(1.02);
-    ${makeShadow(4)}
-  }
 `;
 
-const TEXTAREA_PADDING = 4;
-const Editable = styled.textarea<{ disabled?: boolean }>`
-  position: relative;
-  flex: 1 0 auto;
-  padding: ${TEXTAREA_PADDING}px 0;
-  border: 0px;
-  border-bottom: 1px solid ${p => (p.disabled ? "transparent" : divider.css())};
-  margin-bottom: 0.5em;
-  outline: none;
-  transition: border-color 0.2s ease-out;
-  resize: none;
-
-  &:focus {
-    border-color: ${text_light.css()};
-  }
-
-  &:invalid {
-    border-color: ${pink.css()};
-  }
-
-  &::placeholder {
-    font-style: italic;
-    color: ${text_light.css()};
-    font-weight: normal;
-  }
-`;
-
-const BoldEditable = Bold.withComponent(Editable);
-const TextEditable = Text.withComponent(Editable);
+const BoldEditable = Bold.withComponent(TextInput);
+const TextEditable = Text.withComponent(TextInput);
 
 interface Props {
   candidate: Candidate;
@@ -61,17 +30,6 @@ interface Props {
   borderColor?: string;
   required?: boolean;
 }
-
-const resize = ($el: HTMLElement | null) => {
-  if ($el == null) {
-    return;
-  }
-  $el.style.height = "0px";
-  $el.style.height = `${$el.scrollHeight - TEXTAREA_PADDING * 2}px`;
-};
-
-const removeNewlines = (str: string) =>
-  str.replace(/(\r\n|\n|\r)/gm, "").trimLeft();
 
 export const cardInputId = (id: string) => `card-${id}-name`;
 export const CandidateCard: React.FC<
@@ -94,9 +52,6 @@ export const CandidateCard: React.FC<
       },
       ref
     ) => {
-      const $name = React.createRef<HTMLTextAreaElement>();
-      const $description = React.createRef<HTMLTextAreaElement>();
-
       const isFocused = useRef(false);
       const blurTimeout = useRef(0);
       const onCardFocus = useCallback(
@@ -134,7 +89,7 @@ export const CandidateCard: React.FC<
           }
           onCandidateChange({
             ...candidate,
-            name: removeNewlines(e.target.value)
+            name: e.target.value
           });
         },
         [candidate, onCandidateChange]
@@ -147,7 +102,7 @@ export const CandidateCard: React.FC<
           }
           onCandidateChange({
             ...candidate,
-            description: removeNewlines(e.target.value)
+            description: e.target.value
           });
         },
         [candidate, onCandidateChange]
@@ -165,10 +120,39 @@ export const CandidateCard: React.FC<
         [onEnter]
       );
 
-      useLayoutEffect(() => {
-        resize($name.current);
-        resize($description.current);
-      });
+      const content = editable ? (
+        <>
+          <BoldEditable
+            id={cardInputId(candidate.id)}
+            type="multi"
+            placeholder="name"
+            value={candidate.name}
+            onChange={onNameChange}
+            onKeyPress={onKeyPress}
+            maxLength={50}
+            disabled={!editable}
+            required={required}
+            inline
+          />
+          <TextEditable
+            placeholder="description (optional)"
+            type="multi"
+            value={candidate.description}
+            onChange={onDescriptionChange}
+            onKeyPress={onKeyPress}
+            maxLength={80}
+            disabled={!editable}
+            inline
+          />
+        </>
+      ) : (
+        <>
+          <Bold style={{ padding: "4px 0" }}>{candidate.name}</Bold>
+          <Text style={{ padding: "4px 0" }}>
+            {candidate.description}&nbsp;
+          </Text>
+        </>
+      );
 
       return (
         <Card
@@ -180,28 +164,7 @@ export const CandidateCard: React.FC<
           ref={ref}
         >
           <Flex flex="1" flexDirection="column" justifyContent="space-around">
-            <BoldEditable
-              id={cardInputId(candidate.id)}
-              ref={$name}
-              placeholder="name"
-              rows={1}
-              value={candidate.name}
-              onChange={onNameChange}
-              onKeyPress={onKeyPress}
-              maxLength={50}
-              disabled={!editable}
-              required={required}
-            />
-            <TextEditable
-              ref={$description}
-              placeholder="description (optional)"
-              rows={1}
-              value={candidate.description}
-              onChange={onDescriptionChange}
-              onKeyPress={onKeyPress}
-              maxLength={80}
-              disabled={!editable}
-            />
+            {content}
           </Flex>
         </Card>
       );
