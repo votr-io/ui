@@ -6,9 +6,8 @@
   "scripts": {
     "dev": "ts-node server.ts",
     "build": "next build",
-    "heroku-postbuild": "npm run build",
     "generate": "apollo-client-codegen  generate:apolloHooks -s https://votr-graphql.herokuapp.com/graphql",
-    "start": "next start"
+    "start": "next start -p $PORT"
   },
   "author": "",
   "license": "ISC",
