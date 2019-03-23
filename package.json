@@ -7,7 +7,7 @@
     "dev": "ts-node server.ts",
     "build": "next build",
     "generate": "apollo-client-codegen  generate:apolloHooks -s https://votr-graphql.herokuapp.com/graphql",
-    "start": "next start -p $PORT"
+    "start": "NODE_ENV=production ts-node server.ts"
   },
   "author": "",
   "license": "ISC",
