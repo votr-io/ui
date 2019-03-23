@@ -79,7 +79,7 @@ const resize = (el: HTMLTextAreaElement | HTMLInputElement | null) => {
   if (el == null) {
     return;
   }
-  el.style.height = "auto";
+  el.style.height = "0px";
   el.style.height = `${el.scrollHeight + 2}px`;
 };
 

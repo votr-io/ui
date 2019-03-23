@@ -1,19 +1,22 @@
 import styled from "@emotion/styled-base";
 import { Flex } from "@rebass/grid/emotion";
 import chroma from "chroma-js";
-import { CandidateCard } from "../src/components/candidateCard";
+import { useState } from "react";
+import { Ballot } from "../src/components/ballot";
 import { Button } from "../src/components/controls";
 import {
-  divider,
+  foreground,
   gradient_dark,
   gradient_light,
-  makeShadow,
-  foreground
+  makeShadow
 } from "../src/components/styles";
 import { PageProps } from "../src/components/types";
-import { Headline, Subtitle, Text } from "../src/components/typography";
+import { Headline, Text } from "../src/components/typography";
+import { useGetElection } from "../src/generated/apolloHooks";
 
-const gradient = chroma.scale([gradient_dark, gradient_light]);
+const ID = "04a36ba7-0ea3-4052-a323-873bea0b2b68";
+const TOKEN =
+  "21effad760ffe38541cc06977f22ea929b13c0b4d539b8c6f81f5c13f2f1decbb9f6551526237999ed7bc2035450b80a3c1ac9c1b52ddb7e9f205c2825494bb8204d806b1924f5f4cb4dc70f621badcbd388e42dccb5e2840dfcb5dcacaef24bbd1cd472ac9786b7c55ef1b0827fb426f2c3284fa7";
 
 const PageContainer = styled(Flex)`
   flex: 0 0 auto;
@@ -23,45 +26,28 @@ const PageContainer = styled(Flex)`
   ${makeShadow(8)};
 `;
 
-const VoteContainer = styled(Flex)`
-  flex-direction: column;
-  flex: 1 0 auto;
-  padding: 16px;
-`;
-
-const CandidateContainer = styled(VoteContainer)`
-  ${makeShadow(2).inset}
-  border-radius: 2px;
-`;
-
 const Header = styled(Flex)`
   flex-direction: column;
   flex: 0 0 auto;
   margin: 16px 16px 8px;
   padding-bottom: 8px;
-  align-items: baseline;
-`;
-
-const election = {
-  name: "The Animal Kingdom",
-  description: "...you know the one from the CGPGray video.",
-  candidates: [
-    { name: "Tiger", description: "So feirce!" },
-    { name: "Gorilla", description: "Pretty mellow guy." },
-    { name: "Turtle", description: "Chill AF." },
-    { name: "Leopard", description: "Real cool cat." },
-    { name: "Owl", description: "Who?" }
-  ]
-};
-
-const Placeholder = styled(Flex)`
-  height: 56px;
-  margin: 8px 0;
-  flex-direction: row;
   align-items: center;
 `;
 
 const VotePage: React.FC<PageProps> = props => {
+  const id = props.path.split("/")[2];
+  const { loading, error, data } = useGetElection({ id });
+  const [votes, setVotes] = useState<string[]>([]);
+
+  if (loading || data == null) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error {error.message}</div>;
+  }
+
+  const [election] = data.getElections.elections;
+
   return (
     <Flex
       flexDirection="column"
@@ -77,47 +63,11 @@ const VotePage: React.FC<PageProps> = props => {
           <Headline style={{ marginRight: 8 }}>{election.name}</Headline>
           <Text>{election.description}</Text>
         </Header>
-        <Flex flexDirection="row" flex="1 0 auto">
-          <Flex flexDirection="column" flex="1" p="8px 16px">
-            <Flex
-              pb="16px"
-              justifyContent="center"
-              flex="0 0 auto"
-              style={{ borderBottom: `1px solid ${divider.css()}` }}
-            >
-              <Subtitle>Candidates</Subtitle>
-            </Flex>
-            <VoteContainer>
-              {election.candidates.map((candidate, i) => (
-                <CandidateCard
-                  key={i}
-                  candidate={candidate}
-                  // borderColor={desaturated_gradient(
-                  //   i / (election.candidates.length - 1)
-                  // ).css()}
-                />
-              ))}
-            </VoteContainer>
-          </Flex>
-          <Flex flexDirection="column" flex="2" p="8px 16px">
-            <Flex pb="16px" justifyContent="center" flex="0 0 auto">
-              <Subtitle>Ballot</Subtitle>
-            </Flex>
-            <Flex flexDirection="column" flex="1">
-              <CandidateContainer>
-                {/* {election.candidates.map((candidate, i) => (
-                  <CandidateCard
-                    key={i}
-                    candidate={candidate}
-                    borderColor={gradient(
-                      i / (election.candidates.length - 1)
-                    ).css()}
-                  />
-                ))} */}
-              </CandidateContainer>
-            </Flex>
-          </Flex>
-        </Flex>
+        <Ballot
+          candidates={election.candidates}
+          votes={votes}
+          onChange={setVotes}
+        />
         <Flex
           flexDirection="row"
           flex="0 0 auto"

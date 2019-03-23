@@ -70,7 +70,7 @@ const AdminElection: React.FC<PageProps> = props => {
     (e: React.FormEvent) => {
       e.preventDefault();
 
-      const { name, description } = formState.values;
+      const { name, description, email } = formState.values;
 
       setIsSaving(true);
       createElection({
@@ -78,7 +78,8 @@ const AdminElection: React.FC<PageProps> = props => {
           input: {
             name,
             description,
-            candidates
+            candidates,
+            email
           }
         }
       })

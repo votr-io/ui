@@ -14,7 +14,7 @@ export interface PageProps {
 export interface Candidate {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
 }
 
 export interface Election {

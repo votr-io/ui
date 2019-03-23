@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { CreateElectionRequest } from "./globalTypes";
+import { CreateElectionRequest, ElectionStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CreateElection
@@ -11,6 +11,9 @@ import { CreateElectionRequest } from "./globalTypes";
 export interface CreateElection_createElection_election {
   __typename: "Election";
   id: string;
+  name: string;
+  description: string;
+  status: ElectionStatus;
 }
 
 export interface CreateElection_createElection {

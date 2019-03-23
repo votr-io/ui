@@ -2,10 +2,10 @@
   "version": 1,
   "operations": [
     {
-      "signature": "bb219f4973dd1cd81d578bffc5bf8f8bfc11df881233dea557dc553d1d302429",
-      "document": "mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename id}}}",
+      "signature": "d5036550016117891d3ffc77a66a1562f7254e5e2f76e0ea94b44d34e11bf377",
+      "document": "mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename description id name status}}}",
       "metadata": {
-        "engineSignature": "mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename id}}}"
+        "engineSignature": "mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename description id name status}}}"
       }
     },
     {
