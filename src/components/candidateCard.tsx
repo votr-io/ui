@@ -31,10 +31,10 @@ interface Props {
   required?: boolean;
 }
 
+export type CandidateCardProps = Props & PropTypes<typeof Card>;
+
 export const cardInputId = (id: string) => `card-${id}-name`;
-export const CandidateCard: React.FC<
-  Props & PropTypes<typeof Card>
-> = React.memo(
+export const CandidateCard: React.FC<CandidateCardProps> = React.memo(
   React.forwardRef(
     (
       {
