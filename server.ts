@@ -2,12 +2,10 @@ import { createServer } from "http";
 import * as next from "next";
 import { parse } from "url";
 import { matchRoute } from "./src/components/routes";
-import console = require("console");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
-console.log(process.env);
 const port = process.env.PORT || 3000;
 
 app.prepare().then(() => {
@@ -27,5 +25,6 @@ app.prepare().then(() => {
     //@ts-ignore
   }).listen(port, (err: any) => {
     if (err) throw err;
+    console.log(`listening on :${port}...`);
   });
 });
