@@ -48,17 +48,14 @@ const DraggableCandidateCard: React.FC<DraggableCandidateCardProps> = ({
           flexDirection="row"
           justifyContent="center"
           ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
           style={{
-            margin: `${CARD_MARGIN}px 0`
+            margin: `${CARD_MARGIN}px 0`,
+            ...provided.draggableProps.style
           }}
         >
-          <CandidateCard
-            flex="1 1 0%"
-            {...props}
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          />
+          <CandidateCard flex="1 1 0%" {...props} />
         </Flex>
       )}
     </Draggable>
@@ -128,7 +125,7 @@ export const Ballot: React.FC<BallotProps> = ({
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Flex flexDirection="row" flex="1 1 auto">
-        <Flex flexDirection="column" flex="1 1 0" p="8px 16px">
+        <Flex flexDirection="column" flex="1 1 0%" p="8px 16px">
           <Flex pb="16px" justifyContent="center" flex="0 0 auto">
             <Subtitle>Candidates</Subtitle>
           </Flex>
@@ -153,7 +150,7 @@ export const Ballot: React.FC<BallotProps> = ({
             )}
           </Droppable>
         </Flex>
-        <Flex flexDirection="column" flex="1.6 1.6 0" p="8px 16px">
+        <Flex flexDirection="column" flex="1 1 0%" p="8px 16px">
           <Flex pb="16px" justifyContent="center" flex="0 0 auto">
             <Subtitle>Ballot</Subtitle>
           </Flex>
