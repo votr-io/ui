@@ -168,12 +168,14 @@ export const Ballot: React.FC<BallotProps> = ({
               >
                 {votes.map((id, i) => {
                   const candidate = candidatesById[id];
+                  const divisor = Math.max(votes.length - 1, 1);
+                  const color = gradient(i / divisor).css();
                   return (
                     <DraggableCandidateCard
                       key={id}
                       index={i}
                       candidate={candidate}
-                      borderColor={gradient((i + 1) / votes.length).css()}
+                      borderColor={color}
                     />
                   );
                 })}
