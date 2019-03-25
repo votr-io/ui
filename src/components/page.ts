@@ -15,6 +15,8 @@ export const Page = styled(Flex)`
 `;
 
 export const Content = styled(Flex)`
+  width: 100%;
+  max-width: 1024px;
   background: ${foreground.css()};
   ${makeShadow(4)}
 `;

@@ -1,4 +1,10 @@
-import React, { useMemo, useRef, useEffect } from "react";
+import React, {
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+  useState
+} from "react";
 import { Candidate } from "./types";
 import { Flex } from "@rebass/grid/emotion";
 import styled from "@emotion/styled";
@@ -9,11 +15,16 @@ import {
   CandidateCardProps,
   CARD_MARGIN
 } from "./candidateCard";
-import chroma from "chroma-js";
-import { useGesture } from "react-with-gesture";
-import { useSpring, animated, config, interpolate } from "react-spring";
+import chroma, { bind } from "chroma-js";
 // @ts-ignore no typings =(
 import { add, scale } from "vec-la";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+  ResponderProvided
+} from "react-beautiful-dnd";
 
 const gradient = chroma.scale([gradient_dark, gradient_light]);
 
@@ -23,81 +34,34 @@ export interface BallotProps {
   onChange: (votes: string[]) => void;
 }
 
-type Coordinates = [number, number];
-
-type DraggableCardProps = CandidateCardProps & {
-  position: Coordinates;
-  // onDragStart: (coords: Coordinates) => void;
-  onChangePosition: (coords: Coordinates) => void;
-  // onRelease: (coords: Coordinates) => void;
+type DraggableCandidateCardProps = CandidateCardProps & {
+  index: number;
 };
-
-const DraggableCard: React.FC<DraggableCardProps> = ({
-  position,
-  // onDragStart,
-  onChangePosition,
-  // onRelease,
+const DraggableCandidateCard: React.FC<DraggableCandidateCardProps> = ({
+  index,
   ...props
 }) => {
-  console.log("render");
-  const [{ xy }, set] = useSpring(() => ({ xy: position }));
-  const [{ elevation }, setElevation] = useSpring<{ elevation: number }>(
-    () => ({
-      elevation: 0,
-      config: config.stiff
-    })
-  );
-  const lastValue = useRef(position);
-  const isDragging = useRef(false);
-  const bind = useGesture(({ down, delta }) => {
-    console.log(down, delta);
-    const value = delta.map((v, i) => v + lastValue.current[i]) as Coordinates;
-    console.log(value);
-    if (!isDragging.current && down) {
-      isDragging.current = true;
-      setElevation({ elevation: 1 });
-    }
-    // onChangePosition(value);
-    set({
-      xy: value,
-      // @ts-ignore these types kind of suck
-      immediate: down
-    });
-    if (!down) {
-      isDragging.current = false;
-      lastValue.current = value;
-      setElevation({ elevation: 0 });
-    }
-    return value;
-  });
-
-  const transform = interpolate(
-    [
-      // @ts-ignore lib types are wrong here =(
-      xy.interpolate((x: number, y: number) => {
-        return `translate(${x}px, ${y}px)`;
-      }),
-      elevation.interpolate(v => `scale(${1 + v * 0.1})`)
-    ],
-    (translate, scale) => `${translate} ${scale}`
-  );
-
   return (
-    <div style={{ position: "relative", margin: CARD_MARGIN }}>
-      <Placeholder style={{ opacity: elevation }} />
-      <animated.div
-        {...bind()}
-        style={{
-          userSelect: "none",
-          cursor: "grab",
-          zIndex: elevation.interpolate(v => 1 + v * 10),
-          opacity: elevation.interpolate(v => 1 - 0.2 * v),
-          transform
-        }}
-      >
-        <CandidateCard {...props} />
-      </animated.div>
-    </div>
+    <Draggable draggableId={props.candidate.id} index={index}>
+      {provided => (
+        <Flex
+          flexDirection="row"
+          justifyContent="center"
+          ref={provided.innerRef}
+          style={{
+            margin: `${CARD_MARGIN}px 0`
+          }}
+        >
+          <CandidateCard
+            flex="1 1 0%"
+            {...props}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          />
+        </Flex>
+      )}
+    </Draggable>
   );
 };
 
@@ -106,7 +70,7 @@ export const Ballot: React.FC<BallotProps> = ({
   votes,
   onChange
 }) => {
-  const idMap = useMemo(() => {
+  const candidatesById = useMemo(() => {
     return candidates.reduce(
       (idMap, candidate) => {
         idMap[candidate.id] = candidate;
@@ -115,57 +79,107 @@ export const Ballot: React.FC<BallotProps> = ({
       {} as Record<string, Candidate>
     );
   }, [candidates]);
-  const candidateIds = Object.keys(idMap);
-  const offBallot = candidateIds
-    .filter(id => !votes.includes(id))
-    .map(id => idMap[id]);
-  const onBallot = votes.map<Candidate>(id => idMap[id]);
+  const [bank, setBank] = useState(
+    candidates.map(c => c.id).filter(id => !votes.includes(id))
+  );
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      const { draggableId, destination, source } = result;
+      if (destination == null) {
+        return;
+      }
+      let nextBank = bank;
+      let nextVotes = votes;
+      if (source.droppableId === "bank") {
+        nextBank = [
+          ...nextBank.slice(0, source.index),
+          ...nextBank.slice(source.index + 1)
+        ];
+      } else {
+        nextVotes = [
+          ...nextVotes.slice(0, source.index),
+          ...nextVotes.slice(source.index + 1)
+        ];
+      }
+      if (destination.droppableId === "bank") {
+        nextBank = [
+          ...nextBank.slice(0, destination.index),
+          draggableId,
+          ...nextBank.slice(destination.index)
+        ];
+      } else {
+        nextVotes = [
+          ...nextVotes.slice(0, destination.index),
+          draggableId,
+          ...nextVotes.slice(destination.index)
+        ];
+      }
+      if (nextVotes !== votes) {
+        onChange(nextVotes);
+      }
+      if (nextBank !== bank) {
+        setBank(nextBank);
+      }
+    },
+    [votes, bank, onChange, setBank]
+  );
 
   return (
-    <Flex flexDirection="row" flex="1 0 auto">
-      <Flex flexDirection="column" flex="1" p="8px 16px">
-        <Flex
-          pb="16px"
-          justifyContent="center"
-          flex="0 0 auto"
-          style={{ borderBottom: `1px solid ${divider.css()}` }}
-        >
-          <Subtitle>Candidates</Subtitle>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Flex flexDirection="row" flex="1 1 auto">
+        <Flex flexDirection="column" flex="1 1 0" p="8px 16px">
+          <Flex pb="16px" justifyContent="center" flex="0 0 auto">
+            <Subtitle>Candidates</Subtitle>
+          </Flex>
+          <Droppable droppableId="bank">
+            {provided => (
+              <VoteContainer
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {bank.map((id, i) => {
+                  const candidate = candidatesById[id];
+                  return (
+                    <DraggableCandidateCard
+                      key={id}
+                      index={i}
+                      candidate={candidate}
+                    />
+                  );
+                })}
+                {provided.placeholder}
+              </VoteContainer>
+            )}
+          </Droppable>
         </Flex>
-        <VoteContainer>
-          {offBallot.map((candidate, i) => {
-            return (
-              <DraggableCard
-                position={[0, 0]}
-                key={i}
-                candidate={candidate}
-                // borderColor={desaturated_gradient(
-                //   i / (election.candidates.length - 1)
-                // ).css()}
-              />
-            );
-          })}
-        </VoteContainer>
+        <Flex flexDirection="column" flex="1.6 1.6 0" p="8px 16px">
+          <Flex pb="16px" justifyContent="center" flex="0 0 auto">
+            <Subtitle>Ballot</Subtitle>
+          </Flex>
+          <Droppable droppableId="ballot">
+            {provided => (
+              <CandidateContainer
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {votes.map((id, i) => {
+                  const candidate = candidatesById[id];
+                  return (
+                    <DraggableCandidateCard
+                      key={id}
+                      index={i}
+                      candidate={candidate}
+                    />
+                  );
+                })}
+                {provided.placeholder}
+              </CandidateContainer>
+            )}
+          </Droppable>
+        </Flex>
       </Flex>
-      <Flex flexDirection="column" flex="2" p="8px 16px">
-        <Flex pb="16px" justifyContent="center" flex="0 0 auto">
-          <Subtitle>Ballot</Subtitle>
-        </Flex>
-        <Flex flexDirection="column" flex="1">
-          <CandidateContainer>
-            {onBallot.map((candidate, i) => (
-              <CandidateCard
-                key={i}
-                candidate={candidate}
-                // borderColor={desaturated_gradient(
-                //   i / (election.candidates.length - 1)
-                // ).css()}
-              />
-            ))}
-          </CandidateContainer>
-        </Flex>
-      </Flex>
-    </Flex>
+    </DragDropContext>
   );
 };
 
@@ -178,15 +192,4 @@ const VoteContainer = styled(Flex)`
 const CandidateContainer = styled(VoteContainer)`
   ${makeShadow(2).inset}
   border-radius: 2px;
-`;
-
-const Placeholder = styled(animated.div)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: 2px dashed black;
-  border-radius: 4px;
 `;
