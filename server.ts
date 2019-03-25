@@ -6,6 +6,7 @@ import { matchRoute } from "./src/components/routes";
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
+const port = process.env.PORT || 3000;
 
 app.prepare().then(() => {
   createServer((req, res) => {
@@ -21,7 +22,9 @@ app.prepare().then(() => {
     }
 
     return handle(req, res, parsedUrl);
-  }).listen(3000, (err: any) => {
+    //@ts-ignore
+  }).listen(port, (err: any) => {
     if (err) throw err;
+    console.log(`listening on :${port}...`);
   });
 });
