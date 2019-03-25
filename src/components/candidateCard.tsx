@@ -8,7 +8,7 @@ import { Candidate, PropTypes } from "./types";
 import { Bold, Text } from "./typography";
 
 export const CARD_MARGIN = 8;
-const Card = styled(AnimatedFlex)<{ elevation?: number }>`
+const Card = styled(AnimatedFlex)`
   max-width: 320px;
   min-height: 60px;
   border-radius: 4px;
@@ -16,7 +16,13 @@ const Card = styled(AnimatedFlex)<{ elevation?: number }>`
   background: ${card.css()};
   padding: 4px 16px;
   transition: all 0.2s ease-out;
-  ${p => makeShadow(p.elevation == null ? 2 : p.elevation)}
+  ${makeShadow(2)}
+
+  &.dragging {
+    opacity: 0.8;
+    transform: scale(1.1);
+    ${makeShadow(4)}
+  }
 `;
 
 const BoldEditable = Bold.withComponent(TextInput);
@@ -43,7 +49,6 @@ export const CandidateCard: React.FC<CandidateCardProps> = React.memo(
         onCandidateChange,
         candidate,
         borderColor,
-        elevation,
         onEnter,
         onFocus,
         onBlur,
@@ -158,7 +163,6 @@ export const CandidateCard: React.FC<CandidateCardProps> = React.memo(
         <Card
           {...otherProps}
           style={{ borderColor: borderColor || "#555", ...otherProps.style }}
-          elevation={elevation || 2}
           onFocus={onCardFocus}
           onBlur={onCardBlur}
           ref={ref}

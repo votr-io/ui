@@ -43,21 +43,27 @@ const DraggableCandidateCard: React.FC<DraggableCandidateCardProps> = ({
 }) => {
   return (
     <Draggable draggableId={props.candidate.id} index={index}>
-      {provided => (
-        <Flex
-          flexDirection="row"
-          justifyContent="center"
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          style={{
-            margin: `${CARD_MARGIN}px 0`,
-            ...provided.draggableProps.style
-          }}
-        >
-          <CandidateCard flex="1 1 0%" {...props} />
-        </Flex>
-      )}
+      {(provided, { isDragging, isDropAnimating }) => {
+        return (
+          <Flex
+            flexDirection="row"
+            justifyContent="center"
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={{
+              margin: `${CARD_MARGIN}px 0`,
+              ...provided.draggableProps.style
+            }}
+          >
+            <CandidateCard
+              className={isDragging && !isDropAnimating ? "dragging" : ""}
+              flex="1 1 0%"
+              {...props}
+            />
+          </Flex>
+        );
+      }}
     </Draggable>
   );
 };
@@ -167,6 +173,7 @@ export const Ballot: React.FC<BallotProps> = ({
                       key={id}
                       index={i}
                       candidate={candidate}
+                      borderColor={gradient((i + 1) / votes.length).css()}
                     />
                   );
                 })}
