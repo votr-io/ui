@@ -48,7 +48,7 @@ const ClientProvider: React.FC = ({ children }) => {
   const client = useMemo(
     () =>
       new Client({
-        uri: "https://votr-graphql.herokuapp.com/graphql"
+        uri: "https://votr-graphql-simple.herokuapp.com/graphql"
       }),
     []
   );

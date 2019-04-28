@@ -1,18 +1,18 @@
 {
-  "version": 1,
+  "version": 2,
   "operations": [
     {
       "signature": "d5036550016117891d3ffc77a66a1562f7254e5e2f76e0ea94b44d34e11bf377",
       "document": "mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename description id name status}}}",
       "metadata": {
-        "engineSignature": "mutation CreateElection($input:CreateElectionRequest!){createElection(input:$input){__typename adminToken election{__typename description id name status}}}"
+        "engineSignature": ""
       }
     },
     {
       "signature": "24c66e7d367a25dd2e2d3b786d1d12589ae0a9e6dfb91dc22a7354a7e9ed42ae",
       "document": "query GetElection($id:ID!){getElections(input:{ids:[$id]}){__typename elections{__typename candidates{__typename description id name}description id name status}}}",
       "metadata": {
-        "engineSignature": "query GetElection($id:ID!){getElections(input:{}){__typename elections{__typename candidates{__typename description id name}description id name status}}}"
+        "engineSignature": ""
       }
     }
   ]

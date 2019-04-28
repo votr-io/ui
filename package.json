@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node server.ts",
     "build": "next build",
-    "generate": "apollo-client-codegen  generate:apolloHooks -s https://votr-graphql.herokuapp.com/graphql",
+    "generate": "apollo-client-codegen  generate:apolloHooks -s https://votr-graphql-simple.herokuapp.com/graphql",
     "start": "NODE_ENV=production ts-node server.ts"
   },
   "author": "",
