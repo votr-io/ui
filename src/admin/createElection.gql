@@ -1,0 +1,11 @@
+mutation CreateElection($input: CreateElectionRequest!) {
+  createElection(input: $input) {
+    election {
+      id
+      name
+      description
+      status
+    }
+    adminToken
+  }
+}
