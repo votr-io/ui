@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate": "apollo-codegen generate src/**/*.gql -addTypename --target typescript"
+    "generate": "apollo client:codegen generated --includes=src/**/*.gql --target=typescript --addTypename --endpoint=https://votr-graphql.herokuapp.com/graphql"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,7 +49,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router": "^5.0.3",
     "@types/react-router-dom": "^4.3.5",
-    "apollo-codegen": "^0.20.2",
+    "apollo": "^2.18.0",
     "prettier": "^1.18.2"
   }
 }
