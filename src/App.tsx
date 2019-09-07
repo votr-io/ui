@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { css, Global } from "@emotion/core";
 import { Grid, MuiThemeProvider } from "@material-ui/core";
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
@@ -16,10 +17,11 @@ import { RegistrationPage } from "./registration/RegistrationPage";
 
 const App: React.FC = () => {
   return (
-    <MuiThemeProvider theme={theme}>
-      <ApolloProvider client={client}>
+    <ApolloProvider client={client}>
+      <MuiThemeProvider theme={theme}>
+        <Global styles={globalStyles}></Global>
         <Grid container justify="center">
-          <PageContent item container spacing={2}>
+          <PageContent item container>
             <BrowserRouter>
               <Switch>
                 <Route path="/" exact component={LandingPage}></Route>
@@ -48,10 +50,17 @@ const App: React.FC = () => {
             </BrowserRouter>
           </PageContent>
         </Grid>
-      </ApolloProvider>
-    </MuiThemeProvider>
+      </MuiThemeProvider>
+    </ApolloProvider>
   );
 };
+
+const globalStyles = css`
+  html,
+  body {
+    background: ${theme.palette.background.default};
+  }
+`;
 
 const PageContent = styled(Grid)`
   max-width: ${theme.breakpoints.values.lg}px;
