@@ -21,7 +21,10 @@ import {
   Draggable,
   Droppable,
   DropResult,
-  ResponderProvided
+  ResponderProvided,
+  NotDraggingStyle,
+  DraggableStateSnapshot,
+  DraggingStyle
 } from "react-beautiful-dnd";
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
@@ -71,17 +74,19 @@ export const ElectionPage: React.FC<
   return <Ballot election={election}></Ballot>;
 };
 
-interface BallotState {
-  candidates: string[];
-  votes: string[];
+enum DropTargets {
+  candidates = "candidates",
+  ballot = "ballot"
 }
+
+type BallotState = Record<DropTargets, string[]>;
 
 const Ballot: React.FC<{
   election: GetElection_getElections_elections;
 }> = ({ election }) => {
   const [ballotState, setBallotState] = useState<BallotState>({
     candidates: election.candidates.map(c => c.id),
-    votes: []
+    ballot: []
   });
 
   const onDragEnd = useCallback(
@@ -97,11 +102,11 @@ const Ballot: React.FC<{
         return;
       }
 
-      const src = source.droppableId as keyof BallotState;
-      const dst = destination.droppableId as keyof BallotState;
+      const src = source.droppableId as DropTargets;
+      const dst = destination.droppableId as DropTargets;
       const nextState = {
         candidates: [...ballotState.candidates],
-        votes: [...ballotState.votes]
+        ballot: [...ballotState.ballot]
       };
       nextState[src].splice(source.index, 1);
       nextState[dst].splice(destination.index, 0, draggableId);
@@ -135,13 +140,13 @@ const Ballot: React.FC<{
             <Flex
               flex="1 1 0%"
               flexDirection="column"
-              marginRight={`${theme.spacing(1)}px`}
+              marginRight={`${theme.spacing(2)}px`}
             >
               <Flex flexDirection="column" flex="1 1 0%">
                 <Typography variant="h6" align="center">
                   Candidates
                 </Typography>
-                <Droppable droppableId="candidates">
+                <Droppable droppableId={DropTargets.candidates}>
                   {provided => (
                     <CandidateList
                       flexDirection="column"
@@ -161,6 +166,7 @@ const Ballot: React.FC<{
                             key={candidate.id}
                             candidate={candidate}
                             index={i}
+                            currentList={DropTargets.candidates}
                           ></CandidateCard>
                         );
                       })}
@@ -173,19 +179,19 @@ const Ballot: React.FC<{
             <Flex
               flex="2 2 0%"
               flexDirection="column"
-              marginLeft={`${theme.spacing(1)}px`}
+              marginLeft={`${theme.spacing(2)}px`}
             >
               <Typography variant="h6" align="center">
                 Your Ballot
               </Typography>
-              <Droppable droppableId="votes">
+              <Droppable droppableId={DropTargets.ballot}>
                 {provided => (
                   <BallotCard
                     square
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    {ballotState.votes.map((id, i) => {
+                    {ballotState.ballot.map((id, i) => {
                       const candidate = election.candidates.find(
                         c => c.id === id
                       );
@@ -197,7 +203,7 @@ const Ballot: React.FC<{
                           key={candidate.id}
                           candidate={candidate}
                           index={i}
-                          flat
+                          currentList={DropTargets.ballot}
                         ></CandidateCard>
                       );
                     })}
@@ -233,31 +239,49 @@ const BallotCard = styled(Card)`
 const CandidateCard: React.FC<{
   candidate: GetElection_getElections_elections_candidates;
   index: number;
-  flat?: boolean;
-}> = ({ candidate, index, flat }) => {
+  currentList: DropTargets;
+}> = ({ candidate, index, currentList }) => {
   return (
     <div>
       <Draggable draggableId={candidate.id} index={index}>
-        {provided => (
-          <Card
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            elevation={flat ? 0 : 2}
-            style={{
-              marginBottom: 16,
-              ...provided.draggableProps.style
-            }}
-            square
-          >
-            <CardContent>
-              <Typography variant="h6">{candidate.name}</Typography>
-              <Typography variant="body1" color="textSecondary">
-                {candidate.description}
-              </Typography>
-            </CardContent>
-          </Card>
-        )}
+        {(provided, snapshot) => {
+          const isActivelyDragging =
+            snapshot.isDragging && !snapshot.isDropAnimating;
+          const destination = snapshot.draggingOver || currentList;
+          const destinationElevation =
+            destination === DropTargets.ballot ? 0 : 2;
+          const elevation = isActivelyDragging ? 4 : destinationElevation;
+
+          return (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              style={{
+                marginBottom: 16,
+                ...provided.draggableProps.style
+              }}
+            >
+              <Card
+                elevation={elevation}
+                style={{
+                  transition:
+                    "all cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s",
+                  opacity: isActivelyDragging ? 0.7 : 1,
+                  transform: isActivelyDragging ? "scale(1.1)" : undefined
+                }}
+                square
+              >
+                <CardContent>
+                  <Typography variant="h6">{candidate.name}</Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    {candidate.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </div>
+          );
+        }}
       </Draggable>
     </div>
   );
