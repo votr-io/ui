@@ -1,12 +1,10 @@
 import React from "react";
 import { Grid, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import styled from "@emotion/styled";
+import { blue, red, background, white, tan } from "../theme";
+import { Page } from "../components/Page";
 
 export const LandingPage = () => {
-  return (
-    <Grid item direction="column" justify="center">
-      <Typography variant="h1">VOTR</Typography>
-      <Link to="/elections/create">Create An Election</Link>
-    </Grid>
-  );
+  return <Page header>Hello world!</Page>;
 };

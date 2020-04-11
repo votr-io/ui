@@ -1,16 +1,18 @@
 import { useQuery } from "@apollo/react-hooks";
 import styled from "@emotion/styled";
+import { css } from "@emotion/core";
 import {
   Button,
   Card,
   CardContent,
   CircularProgress,
   Grid,
-  Typography
+  Typography,
+  Fade
 } from "@material-ui/core";
 import { Flex } from "@rebass/grid/emotion";
 import { loader } from "graphql.macro";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -26,20 +28,29 @@ import {
   GetElection_getElections_elections,
   GetElection_getElections_elections_candidates
 } from "./generated/GetElection";
-import { useSpring, animated } from "react-spring";
+import {
+  useSpring,
+  animated,
+  interpolate,
+  useChain,
+  ReactSpringHook
+} from "react-spring";
+import mockResponse from "./mockElection";
 
 const getElection = loader("./getElection.gql");
 
 // Depending on election status, will be ballot, awaiting results or results
-export const ElectionPage: React.FC<
-  RouteComponentProps<{ electionId: string }>
-> = props => {
-  const { loading, error, data } = useQuery<GetElection, GetElectionVariables>(
-    getElection,
-    {
-      variables: { id: props.match.params.electionId }
-    }
-  );
+export const ElectionPage: React.FC<RouteComponentProps<{
+  electionId: string;
+}>> = props => {
+  // const { loading, error, data } = useQuery<GetElection, GetElectionVariables>(
+  //   getElection,
+  //   {
+  //     variables: { id: props.match.params.electionId }
+  //   }
+  // );
+
+  const { loading, error, data } = mockResponse;
 
   if (loading) {
     return (
@@ -88,6 +99,7 @@ const Ballot: React.FC<{
   });
   const [isDragging, setDragging] = useState(false);
   const [isConfirming, setConfirming] = useState(false);
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const onDragEnd = useCallback(
     (result: DropResult, provided: ResponderProvided) => {
@@ -116,11 +128,44 @@ const Ballot: React.FC<{
     [ballotState, setBallotState]
   );
 
-  const springProps = useSpring({ candidatesHidden: isConfirming ? 1 : 0 });
+  const confirmingSpring = useSpring({ isConfirming: isConfirming ? 1 : 0 });
+  const risingSpringRef = useRef<ReactSpringHook>(null);
+  const risingSpring = useSpring({
+    ref: risingSpringRef,
+    v: isSubmitting ? 1 : 0
+  });
+  const fallingSpringRef = useRef<ReactSpringHook>(null);
+  const fallingSpring = useSpring({
+    ref: fallingSpringRef,
+    v: isSubmitting ? 1 : 0
+  });
+
+  useChain([risingSpringRef, fallingSpringRef], [0, 1]);
 
   const submitBallot = () => {
-    setConfirming(!isConfirming);
+    if (!isConfirming) {
+      return setConfirming(true);
+    }
+    setSubmitting(true);
   };
+
+  const cancelConfirming = () => {
+    setConfirming(false);
+  };
+
+  // console.log(confirmingSpring, risingSpring, fallingSpring);
+  const submissionTransform =
+    risingSpring.v &&
+    fallingSpring.v &&
+    interpolate([risingSpring.v, fallingSpring.v], (rise, fall) => {
+      if (rise === 0 && fall === 0) {
+        return undefined;
+      }
+      console.log(rise, fall);
+      return `perspective(200vh) 
+                            translateZ(${0 * 25 + fall * -50}vh)
+                            rotateX(${0 * -25 + fall * -65}deg)`;
+    });
 
   return (
     <DragDropContext
@@ -152,8 +197,8 @@ const Ballot: React.FC<{
               flexDirection="column"
               marginRight={`${theme.spacing(2)}px`}
               style={{
-                opacity: springProps.candidatesHidden.interpolate(i => 1 - i),
-                transform: springProps.candidatesHidden.interpolate(i =>
+                opacity: confirmingSpring.isConfirming.interpolate(i => 1 - i),
+                transform: confirmingSpring.isConfirming.interpolate(i =>
                   i === 0 ? undefined : `translateX(-${(i * 100) / 6}vw)`
                 )
               }}
@@ -199,7 +244,7 @@ const Ballot: React.FC<{
               flexDirection="column"
               marginLeft={`${theme.spacing(2)}px`}
               style={{
-                transform: springProps.candidatesHidden.interpolate(i =>
+                transform: confirmingSpring.isConfirming.interpolate(i =>
                   i === 0 ? undefined : `translateX(-${(i * 100) / 6}vw)`
                 )
               }}
@@ -209,43 +254,60 @@ const Ballot: React.FC<{
               </Typography>
               <Droppable droppableId={DropTargets.ballot}>
                 {provided => (
-                  <BallotCardWrapper>
-                    <BallotCard
-                      square
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {ballotState.ballot.map((id, i) => {
-                        const candidate = election.candidates.find(
-                          c => c.id === id
-                        );
-                        if (candidate == null) {
-                          return null;
-                        }
-                        return (
-                          <CandidateCard
-                            key={candidate.id}
-                            candidate={candidate}
-                            index={i}
-                            currentList={DropTargets.ballot}
-                            isAnyDragging={isDragging}
-                            disabled={isConfirming}
-                          ></CandidateCard>
-                        );
-                      })}
-                      {provided.placeholder}
-                    </BallotCard>
-                    <FloatingButton>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={ballotState.ballot.length === 0}
-                        onClick={submitBallot}
+                  <AnimatedFlex
+                    flex="1 1 0%"
+                    flexDirection="column"
+                    style={{
+                      // height: "100%",
+                      transform: submissionTransform,
+                      opacity:
+                        fallingSpring.v &&
+                        fallingSpring.v.interpolate(i => 1 - i)
+                    }}
+                  >
+                    <BallotCardWrapper>
+                      <BallotCard
+                        square
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
                       >
-                        {isConfirming ? "Confirm" : "Submit"}
-                      </Button>
-                    </FloatingButton>
-                  </BallotCardWrapper>
+                        {ballotState.ballot.map((id, i) => {
+                          const candidate = election.candidates.find(
+                            c => c.id === id
+                          );
+                          if (candidate == null) {
+                            return null;
+                          }
+                          return (
+                            <CandidateCard
+                              key={candidate.id}
+                              candidate={candidate}
+                              index={i}
+                              currentList={DropTargets.ballot}
+                              isAnyDragging={isDragging}
+                              disabled={isConfirming}
+                            ></CandidateCard>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </BallotCard>
+
+                      <FloatingButton side="right">
+                        <Fade in={isConfirming && !isSubmitting}>
+                          <Button onClick={cancelConfirming}>Back</Button>
+                        </Fade>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={ballotState.ballot.length === 0}
+                          onClick={submitBallot}
+                          style={{ marginLeft: theme.spacing(2) }}
+                        >
+                          {isConfirming ? "Confirm" : "Submit"}
+                        </Button>
+                      </FloatingButton>
+                    </BallotCardWrapper>
+                  </AnimatedFlex>
                 )}
               </Droppable>
             </AnimatedFlex>
@@ -262,10 +324,17 @@ const Scrollable = styled(Flex)`
 
 const AnimatedFlex = animated(Flex);
 
-const FloatingButton = styled.div`
+const FloatingButton = styled.div<{ side: "left" | "right" }>`
   position: absolute;
   bottom: ${theme.spacing(2)}px;
-  right: ${theme.spacing(2)}px;
+  ${p =>
+    p.side === "left"
+      ? css`
+          left: ${theme.spacing(2)}px;
+        `
+      : css`
+          right: ${theme.spacing(2)}px;
+        `}
 `;
 
 const CandidateList = styled(Flex)`
