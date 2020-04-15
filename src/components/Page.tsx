@@ -1,21 +1,29 @@
-import React from "react";
-import { Grid, Typography, Container } from "@material-ui/core";
-import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
-import { blue, red, background, white, tan, theme } from "../theme";
+import { Link, Typography } from "@material-ui/core";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { background, blue, red, tan, theme, white } from "../theme";
 
 export interface PageProps {
   header?: boolean;
 }
+
+const MAX_WIDTH = 1080;
+const CARD_MARGIN = theme.spacing(3);
+const CARD_PADDING = theme.spacing(2);
 
 export const Page: React.FC<PageProps> = props => {
   return (
     <Background>
       {props.header && (
         <Header>
-          <Container>
-            <Typography variant="h6">VOTR</Typography>
-          </Container>
+          <HeaderContainer>
+            <Typography variant="h6">
+              <Link component={RouterLink} to="/" underline="none">
+                VOTR
+              </Link>
+            </Typography>
+          </HeaderContainer>
         </Header>
       )}
       <Content>{props.children}</Content>
@@ -25,18 +33,40 @@ export const Page: React.FC<PageProps> = props => {
 
 const Content: React.FC = ({ children }) => (
   <ScrollWrapper>
-    <PolkaDots>
-      <ContentCard>{children}</ContentCard>
-    </PolkaDots>
+    <Container>
+      <Card>{children}</Card>
+    </Container>
   </ScrollWrapper>
 );
 
-const ContentCard = styled.div`
-  padding: ${theme.spacing(2)}px;
-  box-shadow: ${theme.shadows[4]};
-  background: ${white};
+const Container = styled.div`
+  width: 100%;
+  max-width: ${MAX_WIDTH}px;
+  box-sizing: border-box;
+  margin: auto;
+  padding: ${CARD_MARGIN}px;
   display: flex;
   flex: 1 0 auto;
+  flex-direction: column;
+  box-sizing: border-box;
+`;
+
+const HeaderContainer = styled.div`
+  width: 100%;
+  max-width: ${MAX_WIDTH}px;
+  box-sizing: border-box;
+  padding: 0 ${CARD_MARGIN + CARD_PADDING}px;
+  margin: auto;
+`;
+
+const Card = styled.div`
+  box-shadow: ${theme.shadows[2]};
+  padding: ${CARD_PADDING}px;
+  background: ${white};
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  box-sizing: border-box;
 `;
 
 const Background: React.FC = ({ children }) => (
@@ -47,18 +77,33 @@ const Background: React.FC = ({ children }) => (
     <Circle radius={60}></Circle>
     <Circle radius={90}></Circle>
     <Circle radius={120}></Circle>
-    <Line angle={25} color={blue}></Line>
+    <Line angle={30} color={blue}></Line>
+    <Line angle={5} color={blue}></Line>
     <Line angle={170} color={red}></Line>
     <Line angle={105} color={background}></Line>
     <Line angle={85} color={background}></Line>
+    <Vingette></Vingette>
     <ContentWrapper>{children}</ContentWrapper>
   </BackgroundWrapper>
 );
 
 const Header = styled.div`
+  box-shadow: ${theme.shadows[2]};
   background: ${white};
-  padding: ${theme.spacing(2)}px;
+  padding: ${theme.spacing(2)}px 0;
   flex: 0 0 auto;
+  z-index: 1;
+`;
+
+const Vingette = styled.div`
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: radial-gradient(circle, transparent 50%, ${blue} 180%);
+  mix-blend-mode: difference;
 `;
 
 const ContentWrapper = styled.div`
@@ -81,7 +126,11 @@ const ScrollWrapper = styled.div`
 `;
 
 const BackgroundWrapper = styled.div`
-  background: ${background};
+  /* background: ${background}; */
+  background: radial-gradient(${tan} 2px, transparent 2px),
+    radial-gradient(${tan} 2px, transparent 2px), ${background};
+  background-position: 0 0, 8px 8px;
+  background-size: 16px 16px;
   position: absolute;
   top: 0;
   left: 0;
@@ -139,15 +188,21 @@ const Line = styled.div<{ angle: number; color: string }>`
 `;
 
 const PolkaDots = styled.div`
-  padding: ${theme.spacing(2)}px;
-  margin: ${theme.spacing(2)}px;
   background: radial-gradient(${tan} 2px, transparent 2px),
     radial-gradient(${tan} 2px, transparent 2px), transparent;
   background-position: 0 0, 8px 8px;
   background-size: 16px 16px;
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
-  width: 100%;
-  max-width: 1268px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+`;
+
+const PolkaDotsBG = styled.div`
+  background: radial-gradient(${tan} 2px, transparent 2px),
+    radial-gradient(${tan} 2px, transparent 2px), transparent;
+  background-position: 0 0, 8px 8px;
+  background-size: 16px 16px;
+  position: absolute;
 `;

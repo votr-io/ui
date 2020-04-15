@@ -1,6 +1,19 @@
 import React from "react";
-import { Grid, Typography, Container, TextField } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  Container,
+  TextField,
+  Box,
+  OutlinedInput,
+  Button
+} from "@material-ui/core";
 import { useForm } from "react-hook-form";
+import { Page } from "../components/Page";
+import { TextInput } from "../components/TextInput";
+import { Flex } from "@rebass/grid/emotion";
+import styled from "@emotion/styled";
+import { theme } from "../theme";
 
 /**
  * Election Management
@@ -23,33 +36,75 @@ export const CreatePage: React.FC = () => {
   const { register, handleSubmit } = useForm();
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit(data => console.log(data))}>
-        <Grid container>
-          <Grid item xs={12}>
-            <Typography variant="h1">Create Election</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="name"
-              variant="outlined"
-              margin="dense"
-              name="name"
-              inputRef={register}
-            ></TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="description"
-              name="description"
-              multiline
-              variant="outlined"
-              margin="dense"
-              inputRef={register}
-            ></TextField>
-          </Grid>
-        </Grid>
-      </form>
-    </Container>
+    <Page header>
+      <Form onSubmit={handleSubmit(data => console.log(data))}>
+        <Flex mb={theme.spacing(2)}>
+          <Typography variant="h4">Create New Election</Typography>
+        </Flex>
+        <Flex mb={`${theme.spacing(1)}px`} flexDirection="column">
+          <Typography
+            htmlFor="name"
+            component="label"
+            variant="body1"
+            style={{ fontWeight: "bold" }}
+          >
+            Name
+          </Typography>
+          <OutlinedInput
+            id="name"
+            name="name"
+            fullWidth
+            margin="dense"
+            inputRef={register}
+          ></OutlinedInput>
+          <Typography variant="caption" color="error">
+            What is the election called?
+          </Typography>
+        </Flex>
+        <Flex mb={`${theme.spacing(2)}px`} flexDirection="column">
+          <Typography
+            htmlFor="description"
+            component="label"
+            variant="body1"
+            style={{ fontWeight: "bold" }}
+          >
+            Description
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              style={{ fontStyle: "italic" }}
+            >
+              {" "}
+              optional
+            </Typography>
+          </Typography>
+          <OutlinedInput
+            id="description"
+            name="description"
+            fullWidth
+            margin="dense"
+            inputRef={register}
+          ></OutlinedInput>
+          <Typography variant="caption" color="error">
+            What is the election called?
+          </Typography>
+        </Flex>
+        <Flex mb={`${theme.spacing(1)}px`} flexDirection="column">
+          <Typography variant="h6">Candidates</Typography>
+        </Flex>
+        <hr />
+        <Flex flex="1 0 auto" justifyContent="flex-end" alignItems="flex-end">
+          <Button variant="contained" color="primary">
+            Save
+          </Button>
+        </Flex>
+      </Form>
+    </Page>
   );
 };
+
+const Form = styled.form`
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+`;
