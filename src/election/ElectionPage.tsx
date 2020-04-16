@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import mockResponse from "./mockElection";
 import { RouteComponentProps } from "react-router";
 import { Page } from "../components/Page";
@@ -6,12 +6,26 @@ import { Flex } from "@rebass/grid/emotion";
 import { Typography, Button, Grid } from "@material-ui/core";
 import styled from "@emotion/styled";
 import { theme, tan, lightBlue, red, blue } from "../theme";
+import { CandidateCard } from "../components/CandidateCard";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from "react-beautiful-dnd";
 
 // Depending on election status, will be ballot, awaiting results or results
 export const ElectionPage: React.FC<RouteComponentProps<{
   electionId: string;
 }>> = props => {
   const election = mockResponse;
+  const candidatesById = election.candidates.reduce(
+    (candidatesById, candidate) => {
+      candidatesById[candidate.id] = candidate;
+      return candidatesById;
+    },
+    {} as Record<string, typeof mockResponse.candidates[0]>
+  );
 
   return (
     <Page header>
@@ -20,35 +34,37 @@ export const ElectionPage: React.FC<RouteComponentProps<{
           <Typography variant="h4">{election.name}</Typography>
           <Typography variant="body2">{election.description}</Typography>
         </Flex>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <DndColumn>
-              <DndHeader variant="body1" align="center">
-                Candidates
-              </DndHeader>
-              {election.candidates.map(candidate => (
-                <CandidateCard
-                  key={candidate.id}
-                  candidate={candidate}
-                ></CandidateCard>
-              ))}
-            </DndColumn>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <DndColumn>
+                <DndHeader variant="body1" align="center">
+                  Candidates
+                </DndHeader>
+                {election.candidates.slice(3).map(candidate => (
+                  <CandidateCard
+                    key={candidate.id}
+                    candidate={candidate}
+                  ></CandidateCard>
+                ))}
+              </DndColumn>
+            </Grid>
+            <Grid item xs={6}>
+              <DndColumn>
+                <DndHeader variant="body1" align="center">
+                  Your Ballot
+                </DndHeader>
+                {election.candidates.slice(0, 3).map((candidate, i) => (
+                  <CandidateCard
+                    key={candidate.id}
+                    rank={i + 1}
+                    candidate={candidate}
+                  ></CandidateCard>
+                ))}
+              </DndColumn>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <DndColumn>
-              <DndHeader variant="body1" align="center">
-                Your Ballot
-              </DndHeader>
-              {election.candidates.slice(0, 3).map((candidate, i) => (
-                <CandidateCard
-                  key={candidate.id}
-                  rank={i + 1}
-                  candidate={candidate}
-                ></CandidateCard>
-              ))}
-            </DndColumn>
-          </Grid>
-        </Grid>
+        </DragDropContext>
         <Flex
           flex="1 0 auto"
           alignItems="flex-end"
@@ -66,42 +82,10 @@ export const ElectionPage: React.FC<RouteComponentProps<{
   );
 };
 
-const CandidateCard: React.FC<{
-  rank?: number;
-  candidate: typeof mockResponse.candidates[0];
-}> = ({ candidate, rank }) => {
-  return (
-    <Card>
-      <Flex>
-        <Flex width="40px" alignItems="center" justifyContent="center">
-          <Typography variant="h5">{rank}</Typography>
-        </Flex>
-        <Flex flexDirection="column">
-          <Typography variant="body1" style={{ fontWeight: 600 }}>
-            {candidate.name}
-          </Typography>
-          <Typography variant="body2" style={{ fontWeight: 300 }}>
-            {candidate.description}
-          </Typography>
-        </Flex>
-      </Flex>
-    </Card>
-  );
-};
-
-const Divider = styled.div`
-  border: 0.5px solid ${blue};
-  margin: ${theme.spacing(2)}px 0;
-`;
-
 const DndHeader = styled(Typography)`
   padding-bottom: ${theme.spacing(1)}px;
   margin-bottom: ${theme.spacing(1)}px;
   font-weight: 200 !important;
-`;
-
-const Card = styled(Flex)`
-  margin: ${theme.spacing(2)}px 0;
 `;
 
 const DndColumn = styled.div`
