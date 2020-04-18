@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from 'react';
 import {
   Grid,
   Typography,
@@ -6,14 +6,15 @@ import {
   TextField,
   Box,
   OutlinedInput,
-  Button
-} from "@material-ui/core";
-import { useForm } from "react-hook-form";
-import { Page } from "../components/Page";
-import { TextInput } from "../components/TextInput";
-import { Flex } from "@rebass/grid/emotion";
-import styled from "@emotion/styled";
-import { theme } from "../theme";
+  Button,
+} from '@material-ui/core';
+import { useForm } from 'react-hook-form';
+import { Page } from '../components/Page';
+import { TextInput } from '../components/TextInput';
+import { Flex } from '@rebass/grid/emotion';
+import styled from '@emotion/styled';
+import { theme } from '../theme';
+import { UserContext } from '../user/context';
 
 /**
  * Election Management
@@ -33,6 +34,7 @@ import { theme } from "../theme";
  */
 
 export const CreatePage: React.FC = () => {
+  const [state] = useContext(UserContext);
   const { register, handleSubmit } = useForm();
 
   return (
@@ -46,7 +48,7 @@ export const CreatePage: React.FC = () => {
             htmlFor="name"
             component="label"
             variant="body1"
-            style={{ fontWeight: "bold" }}
+            style={{ fontWeight: 'bold' }}
           >
             Name
           </Typography>
@@ -66,15 +68,15 @@ export const CreatePage: React.FC = () => {
             htmlFor="description"
             component="label"
             variant="body1"
-            style={{ fontWeight: "bold" }}
+            style={{ fontWeight: 'bold' }}
           >
             Description
             <Typography
               variant="caption"
               color="textSecondary"
-              style={{ fontStyle: "italic" }}
+              style={{ fontStyle: 'italic' }}
             >
-              {" "}
+              {' '}
               optional
             </Typography>
           </Typography>
@@ -93,6 +95,43 @@ export const CreatePage: React.FC = () => {
           <Typography variant="h6">Candidates</Typography>
         </Flex>
         <hr />
+        {!state.user && (
+          <Flex mb={`${theme.spacing(1)}px`} flexDirection="column">
+            <Typography variant="h6">Create Account</Typography>
+            <Typography
+              htmlFor="name"
+              component="label"
+              variant="body1"
+              style={{ fontWeight: 'bold' }}
+            >
+              Email
+            </Typography>
+            <OutlinedInput
+              id="name"
+              name="name"
+              fullWidth
+              margin="dense"
+              inputRef={register}
+            />
+
+            <Typography
+              htmlFor="name"
+              component="label"
+              variant="body1"
+              style={{ fontWeight: 'bold' }}
+            >
+              Password
+            </Typography>
+            <OutlinedInput
+              id="name"
+              name="name"
+              fullWidth
+              margin="dense"
+              inputRef={register}
+            />
+          </Flex>
+        )}
+
         <Flex flex="1 0 auto" justifyContent="flex-end" alignItems="flex-end">
           <Button variant="contained" color="primary">
             Save
