@@ -107,9 +107,10 @@ export const CreatePage: React.FC = () => {
           candidates,
         },
       });
+      const { id } = response.upsertElection.election;
 
-      //TODO: redirect to election admin page?
-      alert(`election created with id '${response.upsertElection.election.id}'`);
+      //CONSIDER: should this redirect use react-router?
+      window.location.href = `/elections/${id}/admin`;
     } catch (e) {
       //TODO: handle network errors
       console.log(e);
