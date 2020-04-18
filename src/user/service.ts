@@ -16,11 +16,6 @@ export async function self(): Promise<User | null> {
 
 export async function login(email: string, password: string): Promise<User> {
   const response = await sdk.login({ input: { email, password } });
-  if (response.login.user) {
-    console.log(
-      'login mutation was successfull, but no user was on the response.  this should not happen.'
-    );
-  }
   return toUser(response.login.user);
 }
 
