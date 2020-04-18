@@ -15,6 +15,7 @@ import { Flex } from '@rebass/grid/emotion';
 import styled from '@emotion/styled';
 import { theme } from '../theme';
 import { UserContext } from '../user/context';
+import * as UserService from '../user/service';
 
 /**
  * Election Management
@@ -33,13 +34,61 @@ import { UserContext } from '../user/context';
  *  stop
  */
 
+interface Form {
+  name: string;
+  description?: string;
+  candidates: {
+    name: string;
+    description?: string;
+  };
+  email: string;
+  password: string;
+}
 export const CreatePage: React.FC = () => {
-  const [state] = useContext(UserContext);
-  const { register, handleSubmit } = useForm();
+  const [state, dispatch] = useContext(UserContext);
+  const { register, handleSubmit, errors, formState, setError } = useForm<Form>({
+    defaultValues: {},
+  });
+
+  const onSubmit = handleSubmit(async data => {
+    //if the user is not logged in, then they will have to register for an account to create an election
+    if (!state.user) {
+      const { email, password } = data;
+      try {
+        const user = await UserService.login(email, password);
+        dispatch({
+          type: 'LoggedIn',
+          payload: {
+            user,
+          },
+        });
+      } catch (e) {
+        //TODO: catch server errors lke "password incorrect" and use setError
+        setError([
+          {
+            name: 'password',
+            type: 'invalid',
+            message: 'incorrect password',
+          },
+        ]);
+
+        /**
+         * if there are any errors logging in / regisering a user
+         * we should early return, since creating the election will fail.
+         */
+        return;
+      }
+    }
+
+    const { name, description, candidates } = data;
+    console.log('attemping to create election with:');
+    console.log({ name, description, candidates });
+    //TODO: actually create the election
+  });
 
   return (
     <Page header>
-      <Form onSubmit={handleSubmit(data => console.log(data))}>
+      <Form onSubmit={onSubmit}>
         <Flex mb={theme.spacing(2)}>
           <Typography variant="h4">Create New Election</Typography>
         </Flex>
@@ -57,10 +106,10 @@ export const CreatePage: React.FC = () => {
             name="name"
             fullWidth
             margin="dense"
-            inputRef={register}
+            inputRef={register({ required: 'What is the election called?' })}
           ></OutlinedInput>
           <Typography variant="caption" color="error">
-            What is the election called?
+            {errors.name && errors.name.message}
           </Typography>
         </Flex>
         <Flex mb={`${theme.spacing(2)}px`} flexDirection="column">
@@ -87,12 +136,10 @@ export const CreatePage: React.FC = () => {
             margin="dense"
             inputRef={register}
           ></OutlinedInput>
-          <Typography variant="caption" color="error">
-            What is the election called?
-          </Typography>
         </Flex>
         <Flex mb={`${theme.spacing(1)}px`} flexDirection="column">
           <Typography variant="h6">Candidates</Typography>
+          <pre>TODO</pre>
         </Flex>
         <hr />
         {!state.user && (
@@ -105,14 +152,26 @@ export const CreatePage: React.FC = () => {
               style={{ fontWeight: 'bold' }}
             >
               Email
+              <Typography
+                variant="caption"
+                color="textSecondary"
+                style={{ fontStyle: 'italic' }}
+              >
+                {' '}
+                we will never give your email address to anyone
+              </Typography>
             </Typography>
             <OutlinedInput
-              id="name"
-              name="name"
+              id="email"
+              name="email"
+              type="email"
               fullWidth
               margin="dense"
-              inputRef={register}
+              inputRef={register({ required: 'email is required' })}
             />
+            <Typography variant="caption" color="error">
+              {errors.email && errors.email.message}
+            </Typography>
 
             <Typography
               htmlFor="name"
@@ -122,18 +181,28 @@ export const CreatePage: React.FC = () => {
             >
               Password
             </Typography>
+
             <OutlinedInput
-              id="name"
-              name="name"
+              id="password"
+              name="password"
+              type="password"
               fullWidth
               margin="dense"
-              inputRef={register}
+              inputRef={register({ required: 'password is required' })}
             />
+            <Typography variant="caption" color="error">
+              {errors.password && errors.password.message}
+            </Typography>
           </Flex>
         )}
 
         <Flex flex="1 0 auto" justifyContent="flex-end" alignItems="flex-end">
-          <Button variant="contained" color="primary">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={formState.isSubmitting}
+          >
             Save
           </Button>
         </Flex>
