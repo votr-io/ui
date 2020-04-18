@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run generate && npm run generate2 && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "generate": "apollo client:codegen generated --includes=src/**/*.gql --target=typescript --addTypename --endpoint=https://votr-graphql.herokuapp.com/graphql",
