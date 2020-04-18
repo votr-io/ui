@@ -16,6 +16,7 @@ import styled from '@emotion/styled';
 import { theme } from '../theme';
 import { UserContext } from '../user/context';
 import * as UserService from '../user/service';
+import { sdk } from '../graphql/sdk';
 
 /**
  * Election Management
@@ -80,10 +81,40 @@ export const CreatePage: React.FC = () => {
       }
     }
 
-    const { name, description, candidates } = data;
-    console.log('attemping to create election with:');
-    console.log({ name, description, candidates });
-    //TODO: actually create the election
+    const { name, description } = data;
+    //TODO: replace hardcoded candidates with data coming from form once input is figured out
+    const candidates = [
+      {
+        name: 'A',
+        description: '',
+      },
+      {
+        name: 'B',
+        description: '',
+      },
+      {
+        name: 'C',
+        description: '',
+      },
+    ];
+
+    try {
+      //TODO: don't use sdk directly here, make a service layer similar to user
+      const response = await sdk.upsertElection({
+        input: {
+          name,
+          description: description || '',
+          candidates,
+        },
+      });
+
+      //TODO: redirect to election admin page?
+      alert(`election created with id '${response.upsertElection.election.id}'`);
+    } catch (e) {
+      //TODO: handle network errors
+      console.log(e);
+      alert('there was an error creating this election, see logs for details');
+    }
   });
 
   return (
