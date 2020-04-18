@@ -15,6 +15,7 @@
     "apollo-boost": "^0.4.7",
     "emotion": "^10.0.27",
     "graphql": "^14.6.0",
+    "graphql-resolvers": "^0.4.2",
     "graphql.macro": "^1.4.2",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^11.0.5",
@@ -31,7 +32,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate": "apollo client:codegen generated --includes=src/**/*.gql --target=typescript --addTypename --endpoint=https://votr-graphql.herokuapp.com/graphql"
+    "generate": "apollo client:codegen generated --includes=src/**/*.gql --target=typescript --addTypename --endpoint=https://votr-graphql.herokuapp.com/graphql",
+    "generate2": "graphql-codegen"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,6 +51,10 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.13.2",
+    "@graphql-codegen/typescript": "^1.13.2",
+    "@graphql-codegen/typescript-graphql-request": "^1.13.2",
+    "@graphql-codegen/typescript-operations": "^1.13.2",
     "@types/material-ui": "^0.21.7",
     "@types/react": "^16.9.32",
     "@types/react-beautiful-dnd": "^11.0.5",
@@ -63,5 +69,6 @@
     "tabWidth": 2,
     "trailingComma": "es5",
     "printWidth": 90
-  }
+  },
+  "proxy": "https://votr-graphql.herokuapp.com/graphql"
 }
