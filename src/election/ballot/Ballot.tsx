@@ -26,6 +26,8 @@ enum DropTargets {
   ballot = "ballot"
 }
 
+const PADDING = theme.spacing(1);
+
 type BallotState = Record<DropTargets, string[]>;
 
 export interface BallotProps {
@@ -93,54 +95,50 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
             <Typography variant="body2">{election.description}</Typography>
           </Flex>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Droppable droppableId={DropTargets.candidates}>
-                  {provided => (
-                    <DndColumn
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      <DndHeader variant="body1" align="center">
-                        Candidates
-                      </DndHeader>
-                      {ballotState.candidates.map((candidateId, i) => (
-                        <DraggableCard
-                          key={candidateId}
-                          index={i}
-                          currentList={DropTargets.candidates}
-                          candidate={candidatesById[candidateId]}
-                        ></DraggableCard>
-                      ))}
-                      {provided.placeholder}
-                    </DndColumn>
-                  )}
-                </Droppable>
-              </Grid>
-              <Grid item xs={6}>
-                <Droppable droppableId={DropTargets.ballot}>
-                  {provided => (
-                    <DndColumn
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      <DndHeader variant="body1" align="center">
-                        Your Ballot
-                      </DndHeader>
-                      {ballotState.ballot.map((candidateId, i) => (
-                        <DraggableCard
-                          key={candidateId}
-                          index={i}
-                          currentList={DropTargets.ballot}
-                          candidate={candidatesById[candidateId]}
-                        ></DraggableCard>
-                      ))}
-                      {provided.placeholder}
-                    </DndColumn>
-                  )}
-                </Droppable>
-              </Grid>
-            </Grid>
+            <DndWrapper>
+              <Droppable droppableId={DropTargets.candidates}>
+                {provided => (
+                  <DndColumn
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    <DndHeader variant="body1" align="center">
+                      Candidates
+                    </DndHeader>
+                    {ballotState.candidates.map((candidateId, i) => (
+                      <DraggableCard
+                        key={candidateId}
+                        index={i}
+                        currentList={DropTargets.candidates}
+                        candidate={candidatesById[candidateId]}
+                      ></DraggableCard>
+                    ))}
+                    {provided.placeholder}
+                  </DndColumn>
+                )}
+              </Droppable>
+              <Droppable droppableId={DropTargets.ballot}>
+                {provided => (
+                  <DndColumn
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    <DndHeader variant="body1" align="center">
+                      Your Ballot
+                    </DndHeader>
+                    {ballotState.ballot.map((candidateId, i) => (
+                      <DraggableCard
+                        key={candidateId}
+                        index={i}
+                        currentList={DropTargets.ballot}
+                        candidate={candidatesById[candidateId]}
+                      ></DraggableCard>
+                    ))}
+                    {provided.placeholder}
+                  </DndColumn>
+                )}
+              </Droppable>
+            </DndWrapper>
           </DragDropContext>
           <Flex
             flex="1 0 auto"
@@ -158,139 +156,6 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
       </Page>
     </DragDropContext>
   );
-
-  // return (
-  //   <DragDropContext
-  //     onDragStart={() => setDragging(true)}
-  //     onDragEnd={onDragEnd}
-  //   >
-  //     <Flex flex="1 0 auto" flexDirection="column">
-  //       <Flex
-  //         backgroundColor={theme.palette.background.paper}
-  //         p={theme.spacing(2)}
-  //       >
-  //         <Flex
-  //           flex={`0 1 ${theme.breakpoints.values.lg}px`}
-  //           mx="auto"
-  //           flexDirection="column"
-  //         >
-  //           <Typography variant="h4">{election.name}</Typography>
-  //           <Typography variant="subtitle1">{election.description}</Typography>
-  //         </Flex>
-  //       </Flex>
-  //       <Scrollable>
-  //         <Flex
-  //           flex={`0 1 ${theme.breakpoints.values.lg}px`}
-  //           mx="auto"
-  //           p={theme.spacing(2)}
-  //         >
-  //           <AnimatedFlex
-  //             flex="1 1 0%"
-  //             flexDirection="column"
-  //             marginRight={`${theme.spacing(2)}px`}
-  //             style={{
-  //               opacity: springProps.candidatesHidden.interpolate(i => 1 - i),
-  //               transform: springProps.candidatesHidden.interpolate(i =>
-  //                 i === 0 ? undefined : `translateX(-${(i * 100) / 6}vw)`
-  //               )
-  //             }}
-  //           >
-  //             <Scrollable flexDirection="column" flex="1 1 0%">
-  //               <Typography variant="h6" align="center">
-  //                 Candidates
-  //               </Typography>
-  //               <Droppable droppableId={DropTargets.candidates}>
-  //                 {provided => (
-  //                   <CandidateList
-  //                     flexDirection="column"
-  //                     flex="1 1 0%"
-  //                     ref={provided.innerRef}
-  //                     {...provided.droppableProps}
-  //                   >
-  //                     {ballotState.candidates.map((id, i) => {
-  //                       const candidate = election.candidates.find(
-  //                         c => c.id === id
-  //                       );
-  //                       if (candidate == null) {
-  //                         return null;
-  //                       }
-  //                       return (
-  //                         <CandidateCard
-  //                           key={candidate.id}
-  //                           candidate={candidate}
-  //                           index={i}
-  //                           currentList={DropTargets.candidates}
-  //                           isAnyDragging={isDragging}
-  //                           disabled={isConfirming}
-  //                         ></CandidateCard>
-  //                       );
-  //                     })}
-  //                     {provided.placeholder}
-  //                   </CandidateList>
-  //                 )}
-  //               </Droppable>
-  //             </Scrollable>
-  //           </AnimatedFlex>
-  //           <AnimatedFlex
-  //             flex="2 2 0%"
-  //             flexDirection="column"
-  //             marginLeft={`${theme.spacing(2)}px`}
-  //             style={{
-  //               transform: springProps.candidatesHidden.interpolate(i =>
-  //                 i === 0 ? undefined : `translateX(-${(i * 100) / 6}vw)`
-  //               )
-  //             }}
-  //           >
-  //             <Typography variant="h6" align="center">
-  //               Your Ballot
-  //             </Typography>
-  //             <Droppable droppableId={DropTargets.ballot}>
-  //               {provided => (
-  //                 <BallotCardWrapper>
-  //                   <BallotCard
-  //                     square
-  //                     ref={provided.innerRef}
-  //                     {...provided.droppableProps}
-  //                   >
-  //                     {ballotState.ballot.map((id, i) => {
-  //                       const candidate = election.candidates.find(
-  //                         c => c.id === id
-  //                       );
-  //                       if (candidate == null) {
-  //                         return null;
-  //                       }
-  //                       return (
-  //                         <CandidateCard
-  //                           key={candidate.id}
-  //                           candidate={candidate}
-  //                           index={i}
-  //                           currentList={DropTargets.ballot}
-  //                           isAnyDragging={isDragging}
-  //                           disabled={isConfirming}
-  //                         ></CandidateCard>
-  //                       );
-  //                     })}
-  //                     {provided.placeholder}
-  //                   </BallotCard>
-  //                   <FloatingButton>
-  //                     <Button
-  //                       variant="contained"
-  //                       color="primary"
-  //                       disabled={ballotState.ballot.length === 0}
-  //                       onClick={submitBallot}
-  //                     >
-  //                       {isConfirming ? "Confirm" : "Submit"}
-  //                     </Button>
-  //                   </FloatingButton>
-  //                 </BallotCardWrapper>
-  //               )}
-  //             </Droppable>
-  //           </AnimatedFlex>
-  //         </Flex>
-  //       </Scrollable>
-  //     </Flex>
-  //   </DragDropContext>
-  // );
 };
 
 const DraggableCard: React.FC<CandidateCardProps & {
@@ -330,6 +195,11 @@ const DraggableCard: React.FC<CandidateCardProps & {
   );
 };
 
+const DndWrapper = styled(Flex)`
+  flex: 1 0 auto;
+  margin: -${PADDING}px;
+`;
+
 const DndHeader = styled(Typography)`
   padding-bottom: ${theme.spacing(1)}px;
   margin-bottom: ${theme.spacing(1)}px;
@@ -338,11 +208,11 @@ const DndHeader = styled(Typography)`
 
 const DndColumn = styled.div`
   /* flex-direction: column; */
-  /* flex: 1 1 0%; */
+  flex: 1 1 0%;
   padding: ${theme.spacing(1)}px;
+  margin: 0 ${PADDING}px;
   border: 0.5px solid ${theme.palette.divider};
   border-radius: 2px;
-  height: 100%;
   box-sizing: border-box;
   /* margin: ${theme.spacing(1)}px; */
 `;
