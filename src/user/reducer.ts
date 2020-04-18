@@ -7,18 +7,11 @@ export interface LoggedIn {
   };
 }
 
-export interface Resumed {
-  type: 'Resumed';
-  payload: {
-    user: User;
-  };
-}
-
 export interface LoggedOut {
   type: 'LoggedOut';
 }
 
-export type Action = LoggedIn | Resumed | LoggedOut;
+export type Action = LoggedIn | LoggedOut;
 
 export interface State {
   phase: 'init' | 'notLoggedIn' | 'loggedIn';
@@ -28,11 +21,6 @@ export interface State {
 export const userReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'LoggedIn':
-      return {
-        phase: 'loggedIn',
-        user: action.payload.user,
-      };
-    case 'Resumed':
       return {
         phase: 'loggedIn',
         user: action.payload.user,
