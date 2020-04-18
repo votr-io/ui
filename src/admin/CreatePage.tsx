@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Grid,
   Typography,
@@ -17,6 +17,7 @@ import { theme } from '../theme';
 import { UserContext } from '../user/context';
 import * as UserService from '../user/service';
 import { sdk } from '../graphql/sdk';
+import { Redirect } from 'react-router-dom';
 
 /**
  * Election Management
@@ -50,6 +51,7 @@ export const CreatePage: React.FC = () => {
   const { register, handleSubmit, errors, formState, setError } = useForm<Form>({
     defaultValues: {},
   });
+  const [electionId, setElectionId] = useState<string | null>(null);
 
   const onSubmit = handleSubmit(async data => {
     //if the user is not logged in, then they will have to register for an account to create an election
@@ -109,8 +111,10 @@ export const CreatePage: React.FC = () => {
       });
       const { id } = response.upsertElection.election;
 
-      //CONSIDER: should this redirect use react-router?
-      window.location.href = `/elections/${id}/admin`;
+      //CONSIDER: should this redirect use react-router or set the window location?
+      //I'm assuming we want to avoid the full page reload
+      setElectionId(id);
+      // window.location.href = `/elections/${id}/admin`;
     } catch (e) {
       //TODO: handle network errors
       console.log(e);
@@ -120,6 +124,7 @@ export const CreatePage: React.FC = () => {
 
   return (
     <Page header>
+      {electionId && <Redirect to={`/elections/${electionId}/admin`} />}
       <Form onSubmit={onSubmit}>
         <Flex mb={theme.spacing(2)}>
           <Typography variant="h4">Create New Election</Typography>
