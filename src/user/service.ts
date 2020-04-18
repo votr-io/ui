@@ -3,6 +3,7 @@ import { User as GqlUser } from '../graphql/generated/sdk';
 
 export interface User {
   id: string;
+  //can only see your own email, other users emails will not be returned by the server
   email: string | null;
 }
 
