@@ -1,12 +1,8 @@
-import { QueryResult } from "@apollo/react-common";
-import { GetElection, GetElectionVariables } from "./generated/GetElection";
-import { ElectionStatus } from "../../generated/globalTypes";
-
 const response = {
   id: "04a36ba7-0ea3-4052-a323-873bea0b2b68",
   name: "2019 Democratic Primary",
   description: "for the President of the United States",
-  status: "PENDING" as ElectionStatus.PENDING,
+  status: "PENDING",
   candidates: [
     {
       id: "671f529a-5b88-4cd2-a04e-14367ebdf6b8",

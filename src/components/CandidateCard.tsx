@@ -4,11 +4,9 @@ import { Typography } from "@material-ui/core";
 import { theme } from "../theme";
 import styled from "@emotion/styled";
 
-import mockResponse from "../election/mockElection";
-
 export interface CandidateCardProps {
   rank?: number;
-  candidate: typeof mockResponse.candidates[0];
+  candidate: { id: string; name: string; description: string };
 }
 
 // TODO: animate changes in rank
