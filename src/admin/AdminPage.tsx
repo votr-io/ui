@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { sdk } from '../graphql/sdk';
 import { Typography, Button } from '@material-ui/core';
 import { Page } from '../components/Page';
 import { Flex } from '@rebass/grid/emotion';
 import { theme } from '../theme';
-import { ElectionStatus, GetElectionQuery } from '../graphql/generated/sdk';
+
+import * as service from '../election/service';
+import { Election, ElectionStatus } from '../election/service';
 
 export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = props => {
   const { electionId } = props.match.params;
-  const [election, setElection] = useState<GetElectionQuery['election'] | null>(null);
+  const [election, setElection] = useState<Election | null>(null);
 
   useEffect(() => {
     (async () => {
-      const { election } = await sdk.getElection({ id: electionId });
+      const election = await service.getElection(electionId);
       if (election == null) {
         //TODO: redirect to....where?
         alert(`404 - could not find election`);
@@ -26,7 +27,7 @@ export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = 
   }, [electionId]);
 
   const startElection = async () => {
-    await sdk.startElection({ input: { electionId } });
+    await service.startElection(electionId);
     setElection(election => {
       if (!election) return null;
       return {
@@ -37,7 +38,7 @@ export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = 
   };
 
   const stopElection = async () => {
-    await sdk.stopElection({ input: { electionId } });
+    await service.stopElection(electionId);
     setElection(election => {
       if (!election) return null;
       return {
@@ -74,6 +75,9 @@ export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = 
         <Typography variant="h6">Status</Typography>
         <Typography>{election.status}</Typography>
 
+        <Typography variant="h6">Number of Votes</Typography>
+        <Typography>{election.voteCount}</Typography>
+
         {election.status === ElectionStatus.Setup && (
           <Button variant="contained" color="primary" onClick={startElection}>
             Start Election
@@ -81,12 +85,22 @@ export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = 
         )}
 
         {election.status === ElectionStatus.Open && (
-          <Button variant="contained" color="primary" onClick={stopElection}>
-            Stop Election
-          </Button>
+          <>
+            <Button variant="contained" color="primary" onClick={stopElection}>
+              Stop Election
+            </Button>
+            <a href={`/elections/${electionId}`}>Vote in this election!</a>
+          </>
         )}
 
-        {election.results && <pre>{JSON.stringify(election.results)}</pre>}
+        {election.status === ElectionStatus.Closed && (
+          <>
+            <Typography variant="h6">Results</Typography>
+            <pre>
+              {election.results ? JSON.stringify(election.results) : 'no results'}
+            </pre>
+          </>
+        )}
       </Flex>
     </Page>
   );

@@ -16,7 +16,7 @@ import styled from '@emotion/styled';
 import { theme } from '../theme';
 import { UserContext } from '../user/context';
 import * as UserService from '../user/service';
-import { sdk } from '../graphql/sdk';
+import * as ElectionService from '../election/service';
 import { Redirect } from 'react-router-dom';
 
 /**
@@ -101,15 +101,11 @@ export const CreatePage: React.FC = () => {
     ];
 
     try {
-      //TODO: don't use sdk directly here, make a service layer similar to user
-      const response = await sdk.upsertElection({
-        input: {
-          name,
-          description: description || '',
-          candidates,
-        },
+      const { id } = await ElectionService.upsertElection({
+        name,
+        description: description || '',
+        candidates,
       });
-      const { id } = response.upsertElection.election;
 
       //CONSIDER: should this redirect use react-router or set the window location?
       //I'm assuming we want to avoid the full page reload
@@ -176,7 +172,7 @@ export const CreatePage: React.FC = () => {
         </Flex>
         <Flex mb={`${theme.spacing(1)}px`} flexDirection="column">
           <Typography variant="h6">Candidates</Typography>
-          <pre>TODO</pre>
+          <pre>TODO (A, B, and C are hardcoded right now)</pre>
         </Flex>
         <hr />
         {state.phase === 'notLoggedIn' && (
