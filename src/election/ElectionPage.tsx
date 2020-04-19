@@ -38,7 +38,7 @@ export const ElectionPage: React.FC<RouteComponentProps<{
 
   return (
     <div>
-      {election.createdBy.id === userState.user!.id && (
+      {userState.user && userState.user.id === election.createdBy.id && (
         <a href={`/elections/${election.id}/admin`}>
           I'm the owner of this election, take me to the admin page.
         </a>
