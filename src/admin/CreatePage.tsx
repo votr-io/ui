@@ -177,7 +177,7 @@ export const CreatePage: React.FC = () => {
         <hr />
         {state.phase === 'notLoggedIn' && (
           <Flex mb={`${theme.spacing(1)}px`} flexDirection="column">
-            <Typography variant="h6">Create Account</Typography>
+            <Typography variant="h6">Login / Create Account</Typography>
             <Typography
               htmlFor="name"
               component="label"
