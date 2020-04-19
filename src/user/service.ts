@@ -1,6 +1,16 @@
 import { sdk } from '../graphql/sdk';
 import { User as GqlUser } from '../graphql/generated/sdk';
 
+/**
+ * I'm not 100% if this is justified for a project of this size.
+ *
+ * The idea behind this "Service" is to abstract away any GQL types/queries/mutations
+ * to achieve the following:
+ * - create an extra layer of abstraction to protect against API changes
+ * - remove nested types (ie. response.mutationName.OutputType.....)
+ * - simplify types that are "T | undefined | null"
+ */
+
 export interface User {
   id: string;
   //can only see your own email, other users emails will not be returned by the server
