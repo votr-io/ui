@@ -17,8 +17,8 @@ export const ElectionPage: React.FC<RouteComponentProps<{
   useEffect(() => {
     //keep the mock data for erin
     if (electionId === 'dems') {
-      //@ts-ignore
       setElection(mockResponse);
+      return;
     }
 
     ElectionService.getElection(electionId)
