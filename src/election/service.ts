@@ -9,6 +9,9 @@ export enum ElectionStatus {
 
 export interface Election {
   id: string;
+  createdBy: {
+    id: string;
+  };
   name: string;
   description: string;
   status: ElectionStatus;
@@ -51,8 +54,9 @@ export async function startElection(electionId: string) {
   await sdk.startElection({ input: { electionId } });
 }
 
-export async function stopElection(electionId: string) {
-  await sdk.stopElection({ input: { electionId } });
+export async function stopElection(electionId: string): Promise<Election> {
+  const response = await sdk.stopElection({ input: { electionId } });
+  return response.stopElection.election;
 }
 
 export async function castBallot(electionId: string, candidateIds: string[]) {

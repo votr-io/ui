@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import mockResponse from './mockElection';
 import { RouteComponentProps } from 'react-router';
 import { Ballot } from './ballot/Ballot';
 import { Election } from '../election/service';
 import * as ElectionService from '../election/service';
+import { UserContext } from '../user/context';
 
 // Depending on election status, will be ballot, awaiting results or results
 export const ElectionPage: React.FC<RouteComponentProps<{
@@ -11,6 +12,7 @@ export const ElectionPage: React.FC<RouteComponentProps<{
 }>> = props => {
   const { electionId } = props.match.params;
   const [election, setElection] = useState<Election | null>(null);
+  const [userState] = useContext(UserContext);
 
   useEffect(() => {
     //keep the mock data for erin
@@ -36,6 +38,11 @@ export const ElectionPage: React.FC<RouteComponentProps<{
 
   return (
     <div>
+      {election.createdBy.id === userState.user!.id && (
+        <a href={`/elections/${election.id}/admin`}>
+          I'm the owner of this election, take me to the admin page.
+        </a>
+      )}
       <Ballot election={election}></Ballot>
     </div>
   );

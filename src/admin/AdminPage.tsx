@@ -38,14 +38,8 @@ export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = 
   };
 
   const stopElection = async () => {
-    await service.stopElection(electionId);
-    setElection(election => {
-      if (!election) return null;
-      return {
-        ...election,
-        status: ElectionStatus.Closed,
-      };
-    });
+    const election = await service.stopElection(electionId);
+    setElection(election);
   };
 
   if (!election) {
@@ -97,7 +91,9 @@ export const AdminPage: React.FC<RouteComponentProps<{ electionId: string }>> = 
           <>
             <Typography variant="h6">Results</Typography>
             <pre>
-              {election.results ? JSON.stringify(election.results) : 'no results'}
+              {election.results
+                ? JSON.stringify(election.results, null, 2)
+                : 'no results'}
             </pre>
           </>
         )}
