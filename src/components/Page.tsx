@@ -1,8 +1,11 @@
-import styled from "@emotion/styled";
-import { Link, Typography } from "@material-ui/core";
-import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import { background, blue, red, tan, theme, white } from "../theme";
+import styled from '@emotion/styled';
+import { Link, Typography } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { background, blue, red, tan, theme, white } from '../theme';
+import { UserContext } from '../user/context';
+import { AccountMenu } from './AccountMenu';
+import { LoginButton } from './LoginButton';
 
 export interface PageProps {
   header?: boolean;
@@ -13,6 +16,8 @@ const CARD_MARGIN = theme.spacing(3);
 const CARD_PADDING = theme.spacing(2);
 
 export const Page: React.FC<PageProps> = props => {
+  const [userState] = useContext(UserContext);
+
   return (
     <Background>
       {props.header && (
@@ -23,6 +28,8 @@ export const Page: React.FC<PageProps> = props => {
                 VOTR
               </Link>
             </Typography>
+            {userState.phase !== 'loggedIn' && <LoginButton />}
+            {userState.phase === 'loggedIn' && <AccountMenu />}
           </HeaderContainer>
         </Header>
       )}
@@ -57,6 +64,8 @@ const HeaderContainer = styled.div`
   box-sizing: border-box;
   padding: 0 ${CARD_MARGIN + CARD_PADDING}px;
   margin: auto;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Card = styled.div`
@@ -96,7 +105,7 @@ const Header = styled.div`
 `;
 
 const Vingette = styled.div`
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
