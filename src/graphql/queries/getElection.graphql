@@ -1,0 +1,43 @@
+query getElection($id: ID!) {
+  election(id: $id) {
+    id
+    name
+    description
+    createdBy {
+      id
+      email
+    }
+    candidates {
+      id
+      name
+      description
+    }
+    status
+    voteCount
+    results {
+      winner {
+        id
+        name
+        description
+      }
+      rounds {
+        candidateTotals {
+          candidate {
+            id
+            name
+            description
+          }
+          votes
+        }
+        redistribution {
+          candidate {
+            id
+            name
+            description
+          }
+          votes
+        }
+      }
+    }
+  }
+}
