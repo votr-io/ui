@@ -1,0 +1,8 @@
+mutation startElection($input: StartElectionInput!) {
+  startElection(input: $input) {
+    election {
+      id
+      status
+    }
+  }
+}

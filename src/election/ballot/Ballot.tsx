@@ -1,29 +1,28 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   GetElection_election,
-  GetElection_election_candidates
-} from "../generated/GetElection";
+  GetElection_election_candidates,
+} from '../generated/GetElection';
 import {
   DropResult,
   ResponderProvided,
   DragDropContext,
   Droppable,
-  Draggable
-} from "react-beautiful-dnd";
-import { useSpring } from "react-spring";
-import { Page } from "../../components/Page";
-import { Flex } from "@rebass/grid/emotion";
-import { Typography, Grid, Button } from "@material-ui/core";
-import { theme } from "../../theme";
-import {
-  CandidateCard,
-  CandidateCardProps
-} from "../../components/CandidateCard";
-import styled from "@emotion/styled";
+  Draggable,
+} from 'react-beautiful-dnd';
+import { useSpring } from 'react-spring';
+import { Page } from '../../components/Page';
+import { Flex } from '@rebass/grid/emotion';
+import { Typography, Grid, Button } from '@material-ui/core';
+import { theme } from '../../theme';
+import { CandidateCard, CandidateCardProps } from '../../components/CandidateCard';
+import styled from '@emotion/styled';
+import { Election, Candidate } from '../service';
+import * as ElectionService from '../service';
 
 enum DropTargets {
-  candidates = "candidates",
-  ballot = "ballot"
+  candidates = 'candidates',
+  ballot = 'ballot',
 }
 
 const PADDING = theme.spacing(1);
@@ -31,7 +30,7 @@ const PADDING = theme.spacing(1);
 type BallotState = Record<DropTargets, string[]>;
 
 export interface BallotProps {
-  election: GetElection_election;
+  election: Election;
 }
 
 export const Ballot: React.FC<BallotProps> = ({ election }) => {
@@ -40,15 +39,16 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
       election.candidates.reduce((candidatesById, candidate) => {
         candidatesById[candidate.id] = candidate;
         return candidatesById;
-      }, {} as Record<string, GetElection_election_candidates>),
+      }, {} as Record<string, Candidate>),
     [election]
   );
   const [ballotState, setBallotState] = useState<BallotState>({
     candidates: election.candidates.map(c => c.id),
-    ballot: []
+    ballot: [],
   });
   const [isDragging, setDragging] = useState(false);
   const [isConfirming, setConfirming] = useState(false);
+  const [ballotCast, setBallotCast] = useState(false);
 
   const onDragEnd = useCallback(
     (result: DropResult, provided: ResponderProvided) => {
@@ -68,7 +68,7 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
       const dst = destination.droppableId as DropTargets;
       const nextState = {
         candidates: [...ballotState.candidates],
-        ballot: [...ballotState.ballot]
+        ballot: [...ballotState.ballot],
       };
       nextState[src].splice(source.index, 1);
       nextState[dst].splice(destination.index, 0, draggableId);
@@ -80,14 +80,28 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
   const springProps = useSpring({ candidatesHidden: isConfirming ? 1 : 0 });
 
   const submitBallot = () => {
-    setConfirming(!isConfirming);
+    ElectionService.castBallot(election.id, ballotState.ballot)
+      .then(() => {
+        setBallotCast(true);
+      })
+      .catch(e => {
+        //TODO: real error handling
+        console.log(e);
+        alert('there was an error casting ballot, see logs for details');
+      });
   };
 
+  if (ballotCast) {
+    return (
+      <div>
+        <h1>Thanks for submitting your ballot!</h1>
+        <p>You can refresh the page to vote again. This is just for development.</p>
+      </div>
+    );
+  }
+
   return (
-    <DragDropContext
-      onDragStart={() => setDragging(true)}
-      onDragEnd={onDragEnd}
-    >
+    <DragDropContext onDragStart={() => setDragging(true)} onDragEnd={onDragEnd}>
       <Page header>
         <Flex flexDirection="column" flex="1 0 auto">
           <Flex flexDirection="column" marginBottom={`${theme.spacing(3)}px`}>
@@ -98,10 +112,7 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
             <DndWrapper>
               <Droppable droppableId={DropTargets.candidates}>
                 {provided => (
-                  <DndColumn
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
+                  <DndColumn ref={provided.innerRef} {...provided.droppableProps}>
                     <DndHeader variant="body1" align="center">
                       Candidates
                     </DndHeader>
@@ -119,10 +130,7 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
               </Droppable>
               <Droppable droppableId={DropTargets.ballot}>
                 {provided => (
-                  <DndColumn
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
+                  <DndColumn ref={provided.innerRef} {...provided.droppableProps}>
                     <DndHeader variant="body1" align="center">
                       Your Ballot
                     </DndHeader>
@@ -144,11 +152,11 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
             flex="1 0 auto"
             alignItems="flex-end"
             justifyContent="flex-end"
-            style={{ position: "sticky", bottom: theme.spacing(2) }}
+            style={{ position: 'sticky', bottom: theme.spacing(2) }}
             marginTop={`${theme.spacing(2)}px`}
             paddingRight={`${theme.spacing(1)}px`}
           >
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={submitBallot}>
               Submit
             </Button>
           </Flex>
@@ -164,14 +172,9 @@ const DraggableCard: React.FC<CandidateCardProps & {
   disabled?: boolean;
 }> = ({ index, candidate, disabled, currentList }) => {
   return (
-    <Draggable
-      draggableId={candidate.id}
-      index={index}
-      isDragDisabled={disabled}
-    >
+    <Draggable draggableId={candidate.id} index={index} isDragDisabled={disabled}>
       {(provided, snapshot) => {
-        const isActivelyDragging =
-          snapshot.isDragging && !snapshot.isDropAnimating;
+        const isActivelyDragging = snapshot.isDragging && !snapshot.isDropAnimating;
         const destination = snapshot.draggingOver || currentList;
         const isNumberVisible = currentList === DropTargets.ballot;
 
@@ -181,7 +184,7 @@ const DraggableCard: React.FC<CandidateCardProps & {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             style={{
-              ...provided.draggableProps.style
+              ...provided.draggableProps.style,
             }}
           >
             <CandidateCard

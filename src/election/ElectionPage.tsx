@@ -1,27 +1,49 @@
-import React, { useState } from "react";
-import mockResponse from "./mockElection";
-import { RouteComponentProps } from "react-router";
-import { Page } from "../components/Page";
-import { Flex } from "@rebass/grid/emotion";
-import { Typography, Button, Grid } from "@material-ui/core";
-import styled from "@emotion/styled";
-import { theme, tan, lightBlue, red, blue } from "../theme";
-import { CandidateCard } from "../components/CandidateCard";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult
-} from "react-beautiful-dnd";
-import { Ballot } from "./ballot/Ballot";
+import React, { useState, useContext, useEffect } from 'react';
+import mockResponse from './mockElection';
+import { RouteComponentProps } from 'react-router';
+import { Ballot } from './ballot/Ballot';
+import { Election } from '../election/service';
+import * as ElectionService from '../election/service';
+import { UserContext } from '../user/context';
 
 // Depending on election status, will be ballot, awaiting results or results
 export const ElectionPage: React.FC<RouteComponentProps<{
   electionId: string;
 }>> = props => {
-  const election = mockResponse;
+  const { electionId } = props.match.params;
+  const [election, setElection] = useState<Election | null>(null);
+  const [userState] = useContext(UserContext);
 
-  // TODO: query data
-  //@ts-ignore
-  return <Ballot election={election}></Ballot>;
+  useEffect(() => {
+    //keep the mock data for erin
+    if (electionId === 'dems') {
+      //@ts-ignore
+      setElection(mockResponse);
+    }
+
+    ElectionService.getElection(electionId)
+      .then(election => {
+        setElection(election);
+      })
+      .catch(e => {
+        //TODO: real error handling
+        console.log(e);
+        alert('there was an error fetching the election, see logs for details');
+      });
+  }, [electionId]);
+
+  if (!election) {
+    return <div>loading...</div>;
+  }
+
+  return (
+    <div>
+      {election.createdBy.id === userState.user!.id && (
+        <a href={`/elections/${election.id}/admin`}>
+          I'm the owner of this election, take me to the admin page.
+        </a>
+      )}
+      <Ballot election={election}></Ballot>
+    </div>
+  );
 };
