@@ -1,8 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  GetElection_election,
-  GetElection_election_candidates,
-} from '../generated/GetElection';
+
 import {
   DropResult,
   ResponderProvided,
@@ -18,7 +15,6 @@ import { theme } from '../../theme';
 import { CandidateCard, CandidateCardProps } from '../../components/CandidateCard';
 import styled from '@emotion/styled';
 import { Election, Candidate } from '../service';
-import * as ElectionService from '../service';
 
 enum DropTargets {
   candidates = 'candidates',
@@ -31,9 +27,10 @@ type BallotState = Record<DropTargets, string[]>;
 
 export interface BallotProps {
   election: Election;
+  castBallot: (candidateIds: string[]) => void;
 }
 
-export const Ballot: React.FC<BallotProps> = ({ election }) => {
+export const Ballot: React.FC<BallotProps> = ({ election, castBallot }) => {
   const candidatesById = useMemo(
     () =>
       election.candidates.reduce((candidatesById, candidate) => {
@@ -48,7 +45,6 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
   });
   const [isDragging, setDragging] = useState(false);
   const [isConfirming, setConfirming] = useState(false);
-  const [ballotCast, setBallotCast] = useState(false);
 
   const onDragEnd = useCallback(
     (result: DropResult, provided: ResponderProvided) => {
@@ -79,26 +75,9 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
 
   const springProps = useSpring({ candidatesHidden: isConfirming ? 1 : 0 });
 
-  const submitBallot = () => {
-    ElectionService.castBallot(election.id, ballotState.ballot)
-      .then(() => {
-        setBallotCast(true);
-      })
-      .catch(e => {
-        //TODO: real error handling
-        console.log(e);
-        alert('there was an error casting ballot, see logs for details');
-      });
-  };
-
-  if (ballotCast) {
-    return (
-      <div>
-        <h1>Thanks for submitting your ballot!</h1>
-        <p>You can refresh the page to vote again. This is just for development.</p>
-      </div>
-    );
-  }
+  const onSubmit = useCallback(() => {
+    castBallot(ballotState.ballot);
+  }, [castBallot, ballotState.ballot]);
 
   return (
     <DragDropContext onDragStart={() => setDragging(true)} onDragEnd={onDragEnd}>
@@ -156,7 +135,7 @@ export const Ballot: React.FC<BallotProps> = ({ election }) => {
             marginTop={`${theme.spacing(2)}px`}
             paddingRight={`${theme.spacing(1)}px`}
           >
-            <Button variant="contained" color="primary" onClick={submitBallot}>
+            <Button variant="contained" color="primary" onClick={onSubmit}>
               Submit
             </Button>
           </Flex>
