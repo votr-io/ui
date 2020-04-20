@@ -30,6 +30,10 @@ export async function login(email: string, password: string): Promise<User> {
   return toUser(response.login.user);
 }
 
+export async function logout() {
+  await sdk.logout();
+}
+
 //helper to deal with gql types having stuff like "T | undefined | null"
 function toUser(gqlUser: Pick<GqlUser, 'id' | 'email'>): User {
   return {
