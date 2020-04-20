@@ -25,12 +25,7 @@ export const LoginButton: React.FC = () => {
     setOpen(false);
   };
 
-  const { register, handleSubmit, errors, formState, setError } = useForm<Form>({
-    defaultValues: {
-      email: 'test@fake.com',
-      password: 'boggle',
-    },
-  });
+  const { register, handleSubmit, errors, formState, setError } = useForm<Form>();
 
   const onSubmit = handleSubmit(data => {
     const { email, password } = data;
