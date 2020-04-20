@@ -25,7 +25,7 @@ export const AccountMenu: React.FC = () => {
 
   return (
     <div>
-      <IconButton ref={buttonRef} onClick={handleClick}>
+      <IconButton ref={buttonRef} style={{ padding: '6px 8px' }} onClick={handleClick}>
         <AccountCircleIcon />
       </IconButton>
 

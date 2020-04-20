@@ -28,7 +28,7 @@ export const Page: React.FC<PageProps> = props => {
                 VOTR
               </Link>
             </Typography>
-            {userState.phase !== 'loggedIn' && <LoginButton />}
+            {userState.phase === 'notLoggedIn' && <LoginButton />}
             {userState.phase === 'loggedIn' && <AccountMenu />}
           </HeaderContainer>
         </Header>
@@ -60,6 +60,7 @@ const Container = styled.div`
 
 const HeaderContainer = styled.div`
   width: 100%;
+  height: 30px;
   max-width: ${MAX_WIDTH}px;
   box-sizing: border-box;
   padding: 0 ${CARD_MARGIN + CARD_PADDING}px;
